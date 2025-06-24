@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
 
     const completion = await openai.chat.completions.create({
-      model: "mistralai/mistral-7b-instruct", // ✅ FREE model
+      model: "mistralai/mistral-7b-instruct:free", // ✅ FREE model
       messages,
     });
 
