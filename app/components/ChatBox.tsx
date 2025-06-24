@@ -1,9 +1,80 @@
-import React from 'react'
+"use client";
 
-function ChatBox() {
+import { useState } from "react";
+import { ArrowUp } from "lucide-react";
+import clsx from "clsx";
+
+export default function ChatBox() {
+  const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const updatedMessages = [...messages, { role: "user" as const, content: input }];
+    setMessages(updatedMessages);
+    setInput("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/openai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: updatedMessages }),
+      });
+      const data = await res.json();
+      const newAIMessage = { role: "assistant" as const, content: data.reply };
+      setMessages((prev) => [...prev, newAIMessage]);
+    } catch (err) {
+      console.error("Error sending prompt:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
-    <div>ChatBox</div>
-  )
-}
+    <div className="flex flex-col h-[90vh] border rounded-xl shadow-md max-w-3xl mx-auto">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+        {messages.map((msg, idx) => (
+          <div
+            key={idx}
+            className={clsx(
+              "max-w-md px-4 py-2 rounded-lg",
+              msg.role === "user" ? "bg-blue-100 self-start" : "bg-green-100 self-start"
+            )}
+          >
+            <p className="text-sm text-gray-800 whitespace-pre-wrap">{msg.content}</p>
+          </div>
+        ))}
+        {loading && <p className="text-sm text-gray-400">Thinking...</p>}
+      </div>
 
-export default ChatBox
+      <div className="border-t p-4 bg-white flex items-center gap-2">
+        <input
+          className=" text-black flex-1 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+          type="text"
+          placeholder="Type your message..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+        />
+        <button
+          onClick={handleSend}
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 transition"
+          disabled={loading}
+          aria-label="Send message"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </button>
+      </div>
+    </div>
+  );
+}
