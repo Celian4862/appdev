@@ -1,5 +1,5 @@
 import React from 'react'
-import ChatBox from '../test/ChatBox';
+import ChatBox from '../components/ChatBox';
 
 export default function page() {
   return (
