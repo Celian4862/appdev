@@ -1,7 +1,45 @@
 import Link from "next/link";
 import Image from "next/image";
+import { FaUserCircle } from "react-icons/fa";
 
 export default function Nav() {
+  let logged_in = true; // Placeholder session variable
+  const guest = [
+    {
+      route: "/features",
+      name: "features",
+    },
+    {
+      route: "/how-it-works",
+      name: "how it works",
+    },
+    {
+      route: "/tracks",
+      name: "tracks",
+    },
+    {
+      route: "/faq",
+      name: "FAQ",
+    },
+  ];
+  const member = [
+    {
+      route: "/dashboard",
+      name: "dashboard",
+    },
+    {
+      route: "/roadmap",
+      name: "roadmap",
+    },
+    {
+      route: "/assessments",
+      name: "assessments",
+    },
+    {
+      route: "/playground",
+      name: "playground",
+    },
+  ];
   return (
     <nav className="m-7 flex flex-wrap justify-around *:font-bold">
       <Link href="/" className="flex items-center gap-2">
@@ -14,26 +52,35 @@ export default function Nav() {
         />
         <span className="text-3xl">DevMate</span>
       </Link>
-      <div className="flex flex-wrap items-center gap-10">
-        <Link href="/" className="capitalize">
-          home
-        </Link>
-        <Link href="/features" className="capitalize">
-          features
-        </Link>
-        <Link href="/how-it-works" className="capitalize">
-          how it works
-        </Link>
-        <Link href="/tracks" className="capitalize">
-          tracks
-        </Link>
-        <Link href="/faq" className="uppercase">
-          faq
-        </Link>
+      <div className="flex flex-wrap items-center gap-10 *:capitalize">
+        <Link href="/">home</Link>
+        {logged_in ? (
+          <>
+            {member.map((links, index) => (
+              <Link key={index} href={links.route}>
+                {links.name}
+              </Link>
+            ))}
+          </>
+        ) : (
+          <>
+            {guest.map((links, index) => (
+              <Link key={index} href={links.route}>
+                {links.name}
+              </Link>
+            ))}
+          </>
+        )}
       </div>
-      <Link href="/login" className="block rounded-md border-2 px-5 py-1">
-        Login
-      </Link>
+      {logged_in ? (
+        <>
+          <FaUserCircle size={50} color="#ccc" />
+        </>
+      ) : (
+        <Link href="/login" className="block rounded-md border-2 px-5 py-1">
+          Login
+        </Link>
+      )}
     </nav>
   );
 }
