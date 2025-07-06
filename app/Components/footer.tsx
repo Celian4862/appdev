@@ -57,7 +57,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 title={dev.name}
               >
-                <img
+                <Image
                   src={dev.img}
                   alt={dev.name}
                   width={32}

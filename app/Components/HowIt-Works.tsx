@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 export default function HowItWorks() {
@@ -70,7 +67,7 @@ export default function HowItWorks() {
             </a>
             <h3 className="text-xl font-semibold mb-2">Start Using DevMate</h3>
             <p className="text-gray-400">
-              Access your dashboard and explore features right away. You're all set!
+              Access your dashboard and explore features right away. You&apos;re all set!
             </p>
           </div>
         </div>
