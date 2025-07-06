@@ -1,12 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
+html{
+  scroll-behavior: smooth;
+} 
+
 :root {
   --background: #ffffff;
   --foreground: black;
-}
-
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -39,8 +40,4 @@ details[open] summary ~ * {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-html{
-  scroll-behavior: smooth;
 }

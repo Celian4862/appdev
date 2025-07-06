@@ -54,8 +54,6 @@ export default function HowItWorks() {
               Select the tools and features that fit your workflow and needs.
             </p>
           </div>
-
-      
           <div className="flex flex-col items-center text-center">
           <a href="/login">
             <div className="bg-white text-black rounded-full p-4 mb-4">
