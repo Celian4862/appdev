@@ -1,9 +1,10 @@
 import Link from "next/link";
-import Features from "./Components/Features";
-import HowItWorks from "./Components/HowIt-Works";
-import Tracks from "./Components/Tracks";
-import Faq from "./Components/Faq";
-import Footer from "./Components/footer";
+// import Features from "./Components/Features";
+// import HowItWorks from "./Components/HowIt-Works";
+// import Tracks from "./Components/Tracks";
+// import Faq from "./Components/Faq";
+// import Footer from "./Components/footer";
+import UserActivity from "./Activity/UserActivity";
 
 export default function Home() {
   return (
@@ -21,11 +22,12 @@ export default function Home() {
           </Link>
         </div>
       </div>
-      <Features/>
+      {/* <Features/>
       <HowItWorks/>
       <Tracks/>
       <Faq/>
-      <Footer/>
+      <Footer/> */}
+      <UserActivity/>
     </>
   );
 }
