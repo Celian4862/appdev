@@ -1,9 +1,12 @@
+"use client"
 import Link from "next/link";
 import Image from "next/image";
 import { FaUserCircle } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 export default function Nav() {
   const logged_in = true; // Placeholder session variable
+  const pathname = usePathname();
   const guest = [
     {
       route: "/features",
@@ -24,6 +27,10 @@ export default function Nav() {
   ];
   const member = [
     {
+      route: "/",
+      name: "home",
+    },
+    {
       route: "/dashboard",
       name: "dashboard",
     },
@@ -41,7 +48,13 @@ export default function Nav() {
     },
   ];
   return (
-    <nav className="m-7 flex flex-wrap justify-around *:font-bold">
+    <nav
+      className={`${
+        logged_in
+          ? "fixed top-0 left-0 w-full z-50 bg-black py-8 border-b-2 border-white"
+          : "m-7"
+      } flex flex-wrap justify-around items-center *:font-bold`}
+    >
       <Link href="/" className="flex items-center gap-2">
         <Image
           src="/favicon.ico"
@@ -53,11 +66,18 @@ export default function Nav() {
         <span className="text-3xl">DevMate</span>
       </Link>
       <div className="flex flex-wrap items-center gap-10 *:capitalize">
-        <Link href="/">home</Link>
         {logged_in ? (
           <>
             {member.map((links, index) => (
-              <Link key={index} href={links.route}>
+              <Link 
+                key={index} 
+                href={links.route}
+                className={`rounded-md transition-colors duration-300 px-3 py-1 ${
+                  pathname === links.route
+                    ? "bg-white text-black"
+                    : "hover:bg-white hover:text-black"
+                }`}
+              >
                 {links.name}
               </Link>
             ))}

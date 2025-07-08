@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 export default function Home() {
+  const logged_in = true;
   return (
     <>
       <div className="flex h-135 flex-col justify-center gap-10 text-center">
@@ -10,7 +11,7 @@ export default function Home() {
         </div>
         <div>
           <Link
-            href="/sign-up"
+            href={logged_in ? "/dashboard" : "/sign-up"}
             className="rounded-md bg-white px-13 py-4 text-xl font-bold text-black"
           >
             Get Started
