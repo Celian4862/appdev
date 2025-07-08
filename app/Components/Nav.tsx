@@ -9,6 +9,7 @@ export default function Nav() {
   return (
     <nav className="m-7">
       <div className="flex items-center justify-between">
+        {/* Logo and website name */}
         <Link href="/" className="flex items-center gap-2 font-bold">
           <Image
             src="/favicon.ico"
@@ -20,11 +21,13 @@ export default function Nav() {
           <span className="text-3xl">DevMate</span>
         </Link>
 
+	{/* Menu icon for narrower screens. */}
         <button
           className="md:hidden"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle Menu"
         >
+	  {/* Actual SVG that displays the hamburger icon. */}
           <svg
             className="h-6 w-6 text-white"
             fill="none"
@@ -49,6 +52,7 @@ export default function Nav() {
           </svg>
         </button>
 
+	{/* Main navigation links */}
         <div className="hidden items-center gap-10 *:font-bold md:flex">
           {["home", "features", "how-it-works", "tracks", "FAQ"].map(
             (text, i) => (
@@ -62,6 +66,7 @@ export default function Nav() {
             ),
           )}
 
+	  {/* Login button */}
           <Link
             href="/login"
             className="block rounded-md border-2 px-5 py-1 capitalize transition hover:bg-white hover:text-black"
@@ -71,6 +76,7 @@ export default function Nav() {
         </div>
       </div>
 
+      {/* Navigation bar, but for narrow screens */}
       <div
         className={`mt-4 flex transform flex-col gap-4 transition-all duration-300 ease-in-out *:font-bold md:hidden ${
           isOpen
