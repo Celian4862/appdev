@@ -4,7 +4,7 @@ import FormInput from "@/ui/FormInput";
 
 export default function Login() {
   return (
-    <div className="mb-10 flex justify-center rounded-xl">
+    <div className="mb-10 flex justify-center">
       <div className="justify-content flex w-[40vw] flex-col gap-6 rounded-xl border-1 bg-black p-20">
         <div>
           <h1 className="mb-3 text-3xl font-bold">Welcome back!</h1>

@@ -1,5 +1,3 @@
-"use client";
-
 export default function Tracks() {
   const tracks = [
     {

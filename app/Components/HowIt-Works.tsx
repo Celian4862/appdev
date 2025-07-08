@@ -1,5 +1,3 @@
-"use client";
-
 export default function HowItWorks() {
   return (
     <section id="how-it-works" className="bg-black px-4 py-12 text-white">
