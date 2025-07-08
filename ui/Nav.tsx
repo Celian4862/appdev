@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { FaUserCircle } from "react-icons/fa";
@@ -51,9 +51,9 @@ export default function Nav() {
     <nav
       className={`${
         logged_in
-          ? "fixed top-0 left-0 w-full z-50 bg-black py-8 border-b-2 border-white"
+          ? "fixed top-0 left-0 z-50 w-full border-b-2 border-white bg-black py-8"
           : "m-7"
-      } flex flex-wrap justify-around items-center *:font-bold`}
+      } flex flex-wrap items-center justify-around *:font-bold`}
     >
       <Link href="/" className="flex items-center gap-2">
         <Image
@@ -69,10 +69,10 @@ export default function Nav() {
         {logged_in ? (
           <>
             {member.map((links, index) => (
-              <Link 
-                key={index} 
+              <Link
+                key={index}
                 href={links.route}
-                className={`rounded-md transition-colors duration-300 px-3 py-1 ${
+                className={`rounded-md px-3 py-1 transition-colors duration-300 ${
                   pathname === links.route
                     ? "bg-white text-black"
                     : "hover:bg-white hover:text-black"
