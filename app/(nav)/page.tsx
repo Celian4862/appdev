@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export default function Home() {
-  const logged_in = true;
+  const logged_in = process.env.LOGGED_IN === "true"; // Placeholder session variable
   return (
     <>
       <div className="flex h-screen flex-col justify-center gap-10 text-center">

@@ -4,7 +4,7 @@ import { FaUserCircle } from "react-icons/fa";
 import NavLink from "./client/NavLink";
 
 export default function Nav() {
-  const logged_in = true; // Placeholder session variable
+  const logged_in = process.env.LOGGED_IN === "true"; // Placeholder session variable
   return (
     <nav
       className={`${
