@@ -4,7 +4,7 @@ export default function Home() {
   const logged_in = true;
   return (
     <>
-      <div className="flex h-135 flex-col justify-center gap-10 text-center">
+      <div className="flex h-screen flex-col justify-center gap-10 text-center">
         <div className="text-6xl font-bold">Your ultimate study buddy.</div>
         <div className="text-xl font-light">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit.
