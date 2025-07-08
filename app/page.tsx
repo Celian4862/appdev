@@ -17,7 +17,8 @@ export default function Home() {
         <div>
           <Link
             href="/sign-up"
-            className="rounded-md bg-white px-13 py-4 text-xl font-bold text-black">
+            className="rounded-md bg-white px-13 py-4 text-xl font-bold text-black"
+          >
             Get Started
           </Link>
         </div>
@@ -27,7 +28,7 @@ export default function Home() {
       <Tracks/>
       <Faq/>
       <Footer/> */}
-      <UserActivity/>
+      <UserActivity />
     </>
   );
 }

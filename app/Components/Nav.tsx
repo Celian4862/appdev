@@ -7,16 +7,15 @@ export default function Nav() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-   
     <nav className="m-7">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-bold">
           <Image
             src="/favicon.ico"
             alt="DevMate Logo"
             width={25}
             height={25}
-            className="rounded-full ml-10"
+            className="ml-10 rounded-full"
           />
           <span className="text-3xl">DevMate</span>
         </Link>
@@ -27,7 +26,7 @@ export default function Nav() {
           aria-label="Toggle Menu"
         >
           <svg
-            className="w-6 h-6 text-white"
+            className="h-6 w-6 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -50,20 +49,22 @@ export default function Nav() {
           </svg>
         </button>
 
-        <div className="hidden md:flex items-center gap-10 *:font-bold">
-        {["home", "features", "how-it-works", "tracks", "FAQ"].map((text, i) => (
-  <Link
-    key={i}
-    href={text === "home" ? "/" : `/#${text}`} 
-    className="capitalize hover:bg-white hover:text-black hover:rounded-md px-2 py-1 transition"
-  >
-    {text.replace("-", " ")}
-  </Link>
-))}
+        <div className="hidden items-center gap-10 *:font-bold md:flex">
+          {["home", "features", "how-it-works", "tracks", "FAQ"].map(
+            (text, i) => (
+              <Link
+                key={i}
+                href={text === "home" ? "/" : `/#${text}`}
+                className="px-2 py-1 capitalize transition hover:rounded-md hover:bg-white hover:text-black"
+              >
+                {text.replace("-", " ")}
+              </Link>
+            ),
+          )}
 
           <Link
             href="/login"
-            className="block rounded-md border-2 px-5 py-1 capitalize hover:bg-white hover:text-black transition"
+            className="block rounded-md border-2 px-5 py-1 capitalize transition hover:bg-white hover:text-black"
           >
             Login
           </Link>
@@ -71,25 +72,27 @@ export default function Nav() {
       </div>
 
       <div
-        className={`md:hidden mt-4 flex flex-col gap-4 *:font-bold transform transition-all duration-300 ease-in-out ${
+        className={`mt-4 flex transform flex-col gap-4 transition-all duration-300 ease-in-out *:font-bold md:hidden ${
           isOpen
-            ? "opacity-100 translate-y-0 max-h-screen"
-            : "opacity-0 -translate-y-5 max-h-0 overflow-hidden"
+            ? "max-h-screen translate-y-0 opacity-100"
+            : "max-h-0 -translate-y-5 overflow-hidden opacity-0"
         }`}
       >
-       {["home", "features", "how-it-works", "tracks", "FAQ"].map((text, i) => (
-  <Link
-    key={i}
-    href={`#${text === "home" ? "" : text}`}
-    className="capitalize hover:bg-white hover:text-black hover:rounded-md px-2 py-1 transition"
-    onClick={() => setIsOpen(false)}
-  >
-    {text.replace("-", " ")}
-  </Link>
-))}
+        {["home", "features", "how-it-works", "tracks", "FAQ"].map(
+          (text, i) => (
+            <Link
+              key={i}
+              href={`#${text === "home" ? "" : text}`}
+              className="px-2 py-1 capitalize transition hover:rounded-md hover:bg-white hover:text-black"
+              onClick={() => setIsOpen(false)}
+            >
+              {text.replace("-", " ")}
+            </Link>
+          ),
+        )}
         <Link
           href="/login"
-          className="block rounded-md border-2 px-5 py-1 capitalize hover:bg-white hover:text-black transition"
+          className="block rounded-md border-2 px-5 py-1 capitalize transition hover:bg-white hover:text-black"
           onClick={() => setIsOpen(false)}
         >
           Login
@@ -98,4 +101,3 @@ export default function Nav() {
     </nav>
   );
 }
-

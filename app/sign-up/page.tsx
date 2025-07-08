@@ -4,8 +4,8 @@ import FormInput from "@/ui/FormInput";
 
 export default function SignUp() {
   return (
-    <div className="mb-10 flex justify-center ">
-      <div className="justify-content flex w-[40vw] flex-col gap-6 border-1 bg-black p-20 rounded-xl">
+    <div className="mb-10 flex justify-center">
+      <div className="justify-content flex w-[40vw] flex-col gap-6 rounded-xl border-1 bg-black p-20">
         <div>
           <h1 className="mb-3 text-3xl font-bold">Create your account</h1>
           <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>

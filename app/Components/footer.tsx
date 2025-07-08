@@ -4,11 +4,17 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-white px-6 py-12">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+    <footer className="bg-black px-6 py-12 text-white">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <div className="flex items-center space-x-3 mb-4">
-            <Image src="/favicon.ico" alt="DevMate Logo" width={30} height={30} className="rounded-full" />
+          <div className="mb-4 flex items-center space-x-3">
+            <Image
+              src="/favicon.ico"
+              alt="DevMate Logo"
+              width={30}
+              height={30}
+              className="rounded-full"
+            />
             <span className="text-2xl font-bold">DevMate</span>
           </div>
           <p className="text-sm text-gray-400">
@@ -16,39 +22,76 @@ export default function Footer() {
           </p>
         </div>
 
-      
         <div>
-          <h4 className="text-lg font-semibold uppercase mb-3">Explore</h4>
+          <h4 className="mb-3 text-lg font-semibold uppercase">Explore</h4>
           <ul className="space-y-2 text-sm text-gray-300">
-            <li><Link href="/#features">Features</Link></li>
-            <li><Link href="/#how-it-works">How it Works</Link></li>
-            <li><Link href="/tracks">Tracks</Link></li>
-            <li><Link href="/faq">FAQ</Link></li>
+            <li>
+              <Link href="/#features">Features</Link>
+            </li>
+            <li>
+              <Link href="/#how-it-works">How it Works</Link>
+            </li>
+            <li>
+              <Link href="/tracks">Tracks</Link>
+            </li>
+            <li>
+              <Link href="/faq">FAQ</Link>
+            </li>
           </ul>
         </div>
 
-     
         <div>
-          <h4 className="text-lg font-semibold uppercase mb-3">Resources</h4>
+          <h4 className="mb-3 text-lg font-semibold uppercase">Resources</h4>
           <ul className="space-y-2 text-sm text-gray-300">
-            <li><Link href="/about">About Us</Link></li>
-            <li><Link href="/privacy-policy">Privacy Policy</Link></li>
-            <li><Link href="/terms">Terms of Service</Link></li>
-            <li><a href="mailto:devmate.support@email.com">Support</a></li>
+            <li>
+              <Link href="/about">About Us</Link>
+            </li>
+            <li>
+              <Link href="/privacy-policy">Privacy Policy</Link>
+            </li>
+            <li>
+              <Link href="/terms">Terms of Service</Link>
+            </li>
+            <li>
+              <a href="mailto:devmate.support@email.com">Support</a>
+            </li>
           </ul>
         </div>
 
-        
         <div>
-          <h4 className="text-lg font-semibold uppercase mb-3">Dev Team</h4>
+          <h4 className="mb-3 text-lg font-semibold uppercase">Dev Team</h4>
           <div className="flex flex-wrap gap-3">
             {[
-              { name: "Celian", img: "/celian.png", link: "https://github.com/Celian4862" },
-              { name: "Jewel", img: "/jewel.jpg", link: "https://github.com/tobsilog" },
-              { name: "ZXC", img: "/zxc.jpg", link: "https://github.com/zphrc" },
-              { name: "Jomr", img: "/jomr.png", link: "https://github.com/joms-hub" },
-              { name: "Jstn", img: "/jstn.jpg", link: "https://github.com/Peenks" },
-              { name: "KR", img: "/kr.png", link: "https://github.com/Useradd-Ken" },
+              {
+                name: "Celian",
+                img: "/celian.png",
+                link: "https://github.com/Celian4862",
+              },
+              {
+                name: "Jewel",
+                img: "/jewel.jpg",
+                link: "https://github.com/tobsilog",
+              },
+              {
+                name: "ZXC",
+                img: "/zxc.jpg",
+                link: "https://github.com/zphrc",
+              },
+              {
+                name: "Jomr",
+                img: "/jomr.png",
+                link: "https://github.com/joms-hub",
+              },
+              {
+                name: "Jstn",
+                img: "/jstn.jpg",
+                link: "https://github.com/Peenks",
+              },
+              {
+                name: "KR",
+                img: "/kr.png",
+                link: "https://github.com/Useradd-Ken",
+              },
             ].map((dev) => (
               <a
                 key={dev.name}
@@ -62,7 +105,7 @@ export default function Footer() {
                   alt={dev.name}
                   width={32}
                   height={32}
-                  className="rounded-full border border-gray-600 hover:scale-110 transition"
+                  className="rounded-full border border-gray-600 transition hover:scale-110"
                 />
               </a>
             ))}
@@ -70,7 +113,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mt-10 border-t border-gray-800 pt-6 text-sm text-center text-gray-500">
+      <div className="mt-10 border-t border-gray-800 pt-6 text-center text-sm text-gray-500">
         <div className="mb-2">
           <a
             href="https://github.com/Celian4862/appdev"
@@ -87,5 +130,3 @@ export default function Footer() {
     </footer>
   );
 }
-
-
