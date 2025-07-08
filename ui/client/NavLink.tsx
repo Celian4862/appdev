@@ -24,7 +24,7 @@ export default function NavLink({ logged_in }: { logged_in: boolean }) {
     : ["home", "features", "how-it-works", "tracks", "faq"].map((link, i) => (
         <Link
           key={i}
-          href={link === "home" ? "" : `#${link}`}
+          href={link === "home" ? "/" : `/#${link}`}
           className={`rounded-md px-3 py-1 ${link === "faq" ? "uppercase" : "capitalize"} hover:text-black" transition-colors duration-300 hover:bg-white hover:text-black`}
         >
           {link.replace("-", " ")}
