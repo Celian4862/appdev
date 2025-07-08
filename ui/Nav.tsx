@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FaUserCircle } from "react-icons/fa";
 
 export default function Nav() {
-  let logged_in = true; // Placeholder session variable
+  const logged_in = true; // Placeholder session variable
   const guest = [
     {
       route: "/features",
