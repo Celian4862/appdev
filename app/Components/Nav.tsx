@@ -21,13 +21,13 @@ export default function Nav() {
           <span className="text-3xl">DevMate</span>
         </Link>
 
-	{/* Menu icon for narrower screens. */}
+        {/* Menu icon for narrower screens. */}
         <button
           className="md:hidden"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle Menu"
         >
-	  {/* Actual SVG that displays the hamburger icon. */}
+          {/* Actual SVG that displays the hamburger icon. */}
           <svg
             className="h-6 w-6 text-white"
             fill="none"
@@ -52,7 +52,7 @@ export default function Nav() {
           </svg>
         </button>
 
-	{/* Main navigation links */}
+        {/* Main navigation links */}
         <div className="hidden items-center gap-10 *:font-bold md:flex">
           {["home", "features", "how-it-works", "tracks", "FAQ"].map(
             (text, i) => (
@@ -66,7 +66,7 @@ export default function Nav() {
             ),
           )}
 
-	  {/* Login button */}
+          {/* Login button */}
           <Link
             href="/login"
             className="block rounded-md border-2 px-5 py-1 capitalize transition hover:bg-white hover:text-black"
@@ -84,6 +84,7 @@ export default function Nav() {
             : "max-h-0 -translate-y-5 overflow-hidden opacity-0"
         }`}
       >
+        {/* Main links */}
         {["home", "features", "how-it-works", "tracks", "FAQ"].map(
           (text, i) => (
             <Link
@@ -96,6 +97,8 @@ export default function Nav() {
             </Link>
           ),
         )}
+
+        {/* Login button */}
         <Link
           href="/login"
           className="block rounded-md border-2 px-5 py-1 capitalize transition hover:bg-white hover:text-black"
