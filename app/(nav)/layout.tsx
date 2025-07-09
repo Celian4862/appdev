@@ -7,7 +7,7 @@ export default function Layout({
   return (
     <>
       <Nav />
-      {children}
+      <main>{children}</main>
     </>
   );
 }

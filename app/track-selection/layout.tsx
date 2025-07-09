@@ -4,5 +4,5 @@ export default function TrackSelectionLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <main>{children}</main>;
 }

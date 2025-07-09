@@ -7,7 +7,7 @@ export default function DashboardPage() {
   const hasRoadmap = true;
 
   return (
-    <main className="w-full bg-black p-32 px-8">
+    <div className="w-full bg-black p-32 px-8">
       <div className="mx-auto mt-16 max-w-7xl">
         <h1 className="mb-6 text-4xl font-bold text-white">Hi, {userName}!</h1>
         <Link href="/roadmap" className="mb-4 text-lg">
@@ -64,6 +64,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
