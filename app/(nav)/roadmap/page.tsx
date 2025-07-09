@@ -79,7 +79,7 @@ export default function RoadmapPage() {
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 </p>
                 <button className="mt-8 rounded-lg bg-white px-12 py-3 text-lg font-semibold text-black transition hover:bg-blue-700">
-                  Let's go
+                  Let&apos;s go
                 </button>
               </>
             )}

@@ -57,7 +57,7 @@ export default function DashboardPage() {
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 </p>
                 <button className="mt-8 cursor-pointer rounded-lg border border-transparent bg-white px-12 py-3 text-lg font-semibold text-black transition duration-500 hover:border-1 hover:border-white hover:bg-black hover:text-white">
-                  Let's go
+                  Let&apos;s go
                 </button>
               </>
             )}
