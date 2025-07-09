@@ -1,11 +1,9 @@
 import Image from "next/image";
-import { useState } from "react";
 import ShowDetails from "./ui/client/ShowDetails";
 
 export default function RoadmapPage() {
   // Replace with actual user data as needed
   const hasRoadmap = true;
-  const [showDetails, setShowDetails] = useState([false, false, false]);
 
   return (
     <main className="w-full bg-black p-32 px-8">
