@@ -103,305 +103,110 @@ export default function RoadmapPage() {
               scelerisque tellus, ac dapibus nisl ante ac nulla. Sed sed dapibus
               sapien.
             </p>
-            <div className="relative mt-10 min-h-[300px] overflow-hidden rounded-lg border-2 border-white p-12 shadow-md">
-              {/* You can add content here */}
-              <div className="flex items-center gap-3">
-                <Image
-                  src="/icons/phase1_icon.png"
-                  alt="icon"
-                  width={24}
-                  height={24}
-                />
-                <p className="text-xl text-white">Phase 1</p>
-                <div className="flex-1"></div>{" "}
-                {/* pushes the next items to the right */}
-                <div className="flex items-center gap-2">
-                  <div className="h-3 w-84 overflow-hidden rounded-full bg-white/30">
-                    <div
-                      className="h-full rounded-full bg-blue-600 transition-all"
-                      style={{ width: "40%" }} // Set progress percentage here
-                    ></div>
-                  </div>
-                  <span className="ml-4 font-semibold text-white">40%</span>
-                </div>
-              </div>
-              <p className="text-md mt-5 text-white">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-                nec vehicula enim. Pellentesque varius est tellus, ac ultrices
-                nulla consequat eu. Aliquam erat volutpat. Etiam rhoncus
-                ullamcorper dictum. Sed eget ex arcu. Aenean aliquet mi et erat
-                molestie blandit. Duis et diam sed ex rutrum faucibus. Nulla
-                eget urna id libero finibus tempus. Integer imperdiet tincidunt
-                dui eget placerat. Cras vel mauris ornare libero sodales
-                blandit. Donec aliquet, ipsum ut elementum tincidunt, sapien
-                orci scelerisque tellus, ac dapibus nisl ante ac nulla. Sed sed
-                dapibus sapien.
-              </p>
-              <hr className="my-8 border-t-3 border-white/40" />
-              <div>
-                <button
-                  type="button"
-                  className="inline-flex cursor-pointer items-center gap-2 border-b border-transparent pb-2 focus:outline-none"
-                  onClick={() =>
-                    setShowDetails((prev) =>
-                      prev.map((val, i) => (i === 0 ? !val : val)),
-                    )
-                  }
-                >
-                  <p className="text-md text-white">Show Chapter Details</p>
+            {["Phase 1", "Phase 2", "Phase 3"].map((phase, index) => (
+              <div
+                key={index}
+                className="relative mt-10 min-h-[300px] overflow-hidden rounded-lg border-2 border-white p-12 shadow-md"
+              >
+                {/* You can add content here */}
+                <div className="flex items-center gap-3">
                   <Image
-                    src={
-                      showDetails[0]
-                        ? "/icons/arrow_up_icon.png"
-                        : "/icons/arrow_down_icon.png"
-                    }
+                    src="/icons/phase1_icon.png"
                     alt="icon"
                     width={24}
                     height={24}
                   />
-                </button>
-                {showDetails[0] && (
-                  <div className="mt-4 flex flex-col gap-4">
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 1</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 2</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 3</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/assessment_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Assessment</p>
-                    </Link>
+                  <p className="text-xl text-white">{phase}</p>
+                  <div className="flex-1"></div>{" "}
+                  {/* pushes the next items to the right */}
+                  <div className="flex items-center gap-2">
+                    <div className="h-3 w-84 overflow-hidden rounded-full bg-white/30">
+                      <div
+                        className="h-full rounded-full bg-blue-600 transition-all"
+                        style={{ width: "40%" }} // Set progress percentage here
+                      ></div>
+                    </div>
+                    <span className="ml-4 font-semibold text-white">40%</span>
                   </div>
-                )}
-              </div>
-            </div>
-
-            <div className="relative mt-10 min-h-[300px] overflow-hidden rounded-lg border-2 border-white p-12 shadow-md">
-              {/* You can add content here */}
-              <div className="flex items-center gap-3">
-                <Image
-                  src="/icons/phase1_icon.png"
-                  alt="icon"
-                  width={24}
-                  height={24}
-                />
-                <p className="text-xl text-white">Phase 2</p>
-                <div className="flex-1"></div>{" "}
-                {/* pushes the next items to the right */}
-                <div className="flex items-center gap-2">
-                  <div className="h-3 w-84 overflow-hidden rounded-full bg-white/30">
-                    <div
-                      className="h-full rounded-full bg-blue-600 transition-all"
-                      style={{ width: "40%" }} // Set progress percentage here
-                    ></div>
-                  </div>
-                  <span className="ml-4 font-semibold text-white">40%</span>
+                </div>
+                <p className="text-md mt-5 text-white">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Integer nec vehicula enim. Pellentesque varius est tellus, ac
+                  ultrices nulla consequat eu. Aliquam erat volutpat. Etiam
+                  rhoncus ullamcorper dictum. Sed eget ex arcu. Aenean aliquet
+                  mi et erat molestie blandit. Duis et diam sed ex rutrum
+                  faucibus. Nulla eget urna id libero finibus tempus. Integer
+                  imperdiet tincidunt dui eget placerat. Cras vel mauris ornare
+                  libero sodales blandit. Donec aliquet, ipsum ut elementum
+                  tincidunt, sapien orci scelerisque tellus, ac dapibus nisl
+                  ante ac nulla. Sed sed dapibus sapien.
+                </p>
+                <hr className="my-8 border-t-3 border-white/40" />
+                <div>
+                  <button
+                    type="button"
+                    className="inline-flex cursor-pointer items-center gap-2 border-b border-transparent pb-2 focus:outline-none"
+                    onClick={() =>
+                      setShowDetails((prev) =>
+                        prev.map((item, i) => (i === index ? !item : item)),
+                      )
+                    }
+                  >
+                    <p className="text-md text-white">Show Chapter Details</p>
+                    <Image
+                      src={
+                        showDetails[index]
+                          ? "/icons/arrow_up_icon.png"
+                          : "/icons/arrow_down_icon.png"
+                      }
+                      alt="icon"
+                      width={24}
+                      height={24}
+                    />
+                  </button>
+                  {showDetails[index] && (
+                    <div className="mt-4 flex flex-col gap-4">
+                      <Link href="/" className="flex items-center gap-3">
+                        <Image
+                          src="/icons/activity_icon.png"
+                          alt="icon"
+                          width={20}
+                          height={20}
+                        />
+                        <p>Activity 1</p>
+                      </Link>
+                      <Link href="/" className="flex items-center gap-3">
+                        <Image
+                          src="/icons/activity_icon.png"
+                          alt="icon"
+                          width={20}
+                          height={20}
+                        />
+                        <p>Activity 2</p>
+                      </Link>
+                      <Link href="/" className="flex items-center gap-3">
+                        <Image
+                          src="/icons/activity_icon.png"
+                          alt="icon"
+                          width={20}
+                          height={20}
+                        />
+                        <p>Activity 3</p>
+                      </Link>
+                      <Link href="/" className="flex items-center gap-3">
+                        <Image
+                          src="/icons/assessment_icon.png"
+                          alt="icon"
+                          width={20}
+                          height={20}
+                        />
+                        <p>Assessment</p>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
-              <p className="text-md mt-5 text-white">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-                nec vehicula enim. Pellentesque varius est tellus, ac ultrices
-                nulla consequat eu. Aliquam erat volutpat. Etiam rhoncus
-                ullamcorper dictum. Sed eget ex arcu. Aenean aliquet mi et erat
-                molestie blandit. Duis et diam sed ex rutrum faucibus. Nulla
-                eget urna id libero finibus tempus. Integer imperdiet tincidunt
-                dui eget placerat. Cras vel mauris ornare libero sodales
-                blandit. Donec aliquet, ipsum ut elementum tincidunt, sapien
-                orci scelerisque tellus, ac dapibus nisl ante ac nulla. Sed sed
-                dapibus sapien.
-              </p>
-              <hr className="my-8 border-t-3 border-white/40" />
-              <div>
-                <button
-                  type="button"
-                  className="inline-flex cursor-pointer items-center gap-2 border-b border-transparent pb-2 focus:outline-none"
-                  onClick={() =>
-                    setShowDetails((prev) =>
-                      prev.map((val, i) => (i === 1 ? !val : val)),
-                    )
-                  }
-                >
-                  <p className="text-md text-white">Show Chapter Details</p>
-                  <Image
-                    src={
-                      showDetails[1]
-                        ? "/icons/arrow_up_icon.png"
-                        : "/icons/arrow_down_icon.png"
-                    }
-                    alt="icon"
-                    width={24}
-                    height={24}
-                  />
-                </button>
-                {showDetails[1] && (
-                  <div className="mt-4 flex flex-col gap-4">
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 1</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 2</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 3</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/assessment_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Assessment</p>
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="relative mt-10 min-h-[300px] overflow-hidden rounded-lg border-2 border-white p-12 shadow-md">
-              {/* You can add content here */}
-              <div className="flex items-center gap-3">
-                <Image
-                  src="/icons/phase1_icon.png"
-                  alt="icon"
-                  width={24}
-                  height={24}
-                />
-                <p className="text-xl text-white">Phase 3</p>
-                <div className="flex-1"></div>{" "}
-                {/* pushes the next items to the right */}
-                <div className="flex items-center gap-2">
-                  <div className="h-3 w-84 overflow-hidden rounded-full bg-white/30">
-                    <div
-                      className="h-full rounded-full bg-blue-600 transition-all"
-                      style={{ width: "40%" }} // Set progress percentage here
-                    ></div>
-                  </div>
-                  <span className="ml-4 font-semibold text-white">40%</span>
-                </div>
-              </div>
-              <p className="text-md mt-5 text-white">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-                nec vehicula enim. Pellentesque varius est tellus, ac ultrices
-                nulla consequat eu. Aliquam erat volutpat. Etiam rhoncus
-                ullamcorper dictum. Sed eget ex arcu. Aenean aliquet mi et erat
-                molestie blandit. Duis et diam sed ex rutrum faucibus. Nulla
-                eget urna id libero finibus tempus. Integer imperdiet tincidunt
-                dui eget placerat. Cras vel mauris ornare libero sodales
-                blandit. Donec aliquet, ipsum ut elementum tincidunt, sapien
-                orci scelerisque tellus, ac dapibus nisl ante ac nulla. Sed sed
-                dapibus sapien.
-              </p>
-              <hr className="my-8 border-t-3 border-white/40" />
-              <div>
-                <button
-                  type="button"
-                  className="inline-flex cursor-pointer items-center gap-2 border-b border-transparent pb-2 focus:outline-none"
-                  onClick={() =>
-                    setShowDetails((prev) =>
-                      prev.map((val, i) => (i === 2 ? !val : val)),
-                    )
-                  }
-                >
-                  <p className="text-md text-white">Show Chapter Details</p>
-                  <Image
-                    src={
-                      showDetails[2]
-                        ? "/icons/arrow_up_icon.png"
-                        : "/icons/arrow_down_icon.png"
-                    }
-                    alt="icon"
-                    width={24}
-                    height={24}
-                  />
-                </button>
-                {showDetails[2] && (
-                  <div className="mt-4 flex flex-col gap-4">
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 1</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 2</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/activity_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Activity 3</p>
-                    </Link>
-                    <Link href="/" className="flex items-center gap-3">
-                      <Image
-                        src="/icons/assessment_icon.png"
-                        alt="icon"
-                        width={20}
-                        height={20}
-                      />
-                      <p>Assessment</p>
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
+            ))}
           </div>
         </>
       ) : (
