@@ -17,7 +17,7 @@ export default function Nav() {
           alt="DevMate Logo"
           width={25}
           height={25}
-          className="rounded-full"
+          className="h-auto w-7 rounded-full"
         />
         <span className="text-3xl">DevMate</span>
       </Link>

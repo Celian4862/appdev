@@ -21,6 +21,7 @@ export default function RootLayout({
           alt="Home page background"
           width={500}
           height={500}
+          priority={true}
           className="absolute top-0 right-0 -z-1 h-screen w-auto object-cover"
         />
         {children}
