@@ -23,7 +23,21 @@ export default function Nav() {
         <span className="text-3xl">DevMate</span>
       </Link>
       <div className="flex flex-wrap items-center gap-10">
-        <NavLink logged_in={logged_in} />
+        {!logged_in ? (
+          ["home", "features", "how-it-works", "tracks", "faq"].map(
+            (link, i) => (
+              <Link
+                key={i}
+                href={link === "home" ? "/" : `/#${link}`}
+                className={`rounded-md px-3 py-1 ${link === "faq" ? "uppercase" : "capitalize"} hover:text-black" transition-colors duration-300 hover:bg-white hover:text-black`}
+              >
+                {link.replace("-", " ")}
+              </Link>
+            ),
+          )
+        ) : (
+          <NavLink />
+        )}
       </div>
       {logged_in ? (
         <>
