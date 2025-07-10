@@ -1,7 +1,7 @@
 export default function FAQ() {
   return (
     <>
-      <section id="FAQ" className="bg-black text-white">
+      <section id="faq" className="bg-black text-white">
         <div className="container mx-auto flex h-150 flex-col justify-center px-4 py-8 md:p-8">
           <h2 className="text-2xl font-semibold sm:text-4xl">
             Frequently Asked Questions

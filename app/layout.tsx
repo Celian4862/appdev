@@ -1,7 +1,7 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import Nav from "./Components/Nav";
 import "./globals.css";
+import Footer from "./ui/Footer";
 
 export const metadata: Metadata = {
   title: "DevMate",
@@ -16,14 +16,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <Nav />
         <Image
           src="/home_background.png"
           alt="Home page background"
           fill
+          priority={true}
           className="absolute top-0 right-0 -z-1 h-screen w-auto object-cover"
         />
         {children}
+        <Footer />
       </body>
     </html>
   );
