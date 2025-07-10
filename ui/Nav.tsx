@@ -3,6 +3,7 @@ import Image from "next/image";
 import { FaUserCircle } from "react-icons/fa";
 import NavLink from "./client/NavLink";
 
+// Check app/(nav)/ui/Nav.tsx for additions
 export default function Nav() {
   const logged_in = process.env.LOGGED_IN === "true"; // Placeholder session variable
   return (

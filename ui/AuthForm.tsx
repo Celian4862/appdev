@@ -22,7 +22,7 @@ export default function AuthForm({
 }) {
   return (
     <div className="mb-10 flex justify-center">
-      <div className="justify-content flex w-[40vw] flex-col gap-6 border-1 bg-black p-20">
+      <div className="justify-content flex w-[40vw] flex-col gap-6 rounded-xl border-1 bg-black p-20">
         <div>
           <h1 className="mb-3 text-3xl font-bold">{greet}</h1>
           <div>{desc}</div>
