@@ -14,7 +14,16 @@ export default function DashboardPage() {
   return (
     <div className="w-full bg-black p-32 px-8 relative">
       <div className="mx-auto mt-16 max-w-7xl relative">
-        <h1 className="mb-6 text-4xl font-bold text-white">Hi, {userName}!</h1>
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-4xl font-bold text-white">Hi, {userName}!</h1>
+          <button
+            onClick={() => setChatOpen(!chatOpen)}
+            className="cursor-pointer rounded-lg border border-white bg-black px-6 py-2 text-lg font-semibold text-white transition duration-500 hover:border-1 hover:bg-white hover:text-black"
+          >
+            Study Buddy
+          </button>
+        </div>
+
         <Link href="/roadmap" className="mb-4 text-lg">
           <span className="inline-flex items-center gap-2 border-b-3 border-transparent pb-2 hover:border-b-3 hover:border-white">
             <Image
@@ -68,10 +77,7 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
-        <button onClick={() => setChatOpen(!chatOpen)} 
-          className="mt-8 cursor-pointer rounded-lg border border-transparent bg-white px-12 py-3 text-lg font-semibold text-black transition duration-500 hover:border-1 hover:border-white hover:bg-black hover:text-white">
-                  ChatBox
-                </button>
+        
         {chatOpen && (
           <div className="absolute right-0 top-0 h-full w-[35%]">
             <ChatBox onClose={() => setChatOpen(false)} />
