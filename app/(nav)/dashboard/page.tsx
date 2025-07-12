@@ -1,14 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
+import ChatBox from "../../components/ChatBox";
+import { useState } from "react";
 
 export default function DashboardPage() {
   // Replace with actual user data as needed
   const userName = "Bernie";
   const hasRoadmap = true;
+  const [chatOpen, setChatOpen] = useState(false);
 
   return (
-    <div className="w-full bg-black p-32 px-8">
-      <div className="mx-auto mt-16 max-w-7xl">
+    <div className="w-full bg-black p-32 px-8 relative">
+      <div className="mx-auto mt-16 max-w-7xl relative">
         <h1 className="mb-6 text-4xl font-bold text-white">Hi, {userName}!</h1>
         <Link href="/roadmap" className="mb-4 text-lg">
           <span className="inline-flex items-center gap-2 border-b-3 border-transparent pb-2 hover:border-b-3 hover:border-white">
@@ -63,7 +68,17 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+        <button onClick={() => setChatOpen(!chatOpen)} 
+          className="mt-8 cursor-pointer rounded-lg border border-transparent bg-white px-12 py-3 text-lg font-semibold text-black transition duration-500 hover:border-1 hover:border-white hover:bg-black hover:text-white">
+                  ChatBox
+                </button>
+        {chatOpen && (
+          <div className="absolute right-0 top-0 h-full w-[35%]">
+            <ChatBox onClose={() => setChatOpen(false)} />
+          </div>
+        )}
       </div>
+      
     </div>
   );
 }
