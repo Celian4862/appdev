@@ -1,9 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: black;
+  --background: black;
+  --foreground: white;
 }
 
 @theme inline {
@@ -13,15 +17,23 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: black;
-    --foreground: white;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Inter, sans-serif;
+}
+
+details[open] summary ~ * {
+  animation: expand 0.3s ease-in-out;
+}
+
+@keyframes expand {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
