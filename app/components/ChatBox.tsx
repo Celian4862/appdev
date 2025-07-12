@@ -2,9 +2,14 @@
 
 import { useState } from "react";
 import { ArrowUp } from "lucide-react";
+import { X } from "lucide-react";
 import clsx from "clsx";
 
-export default function ChatBox() {
+type ChatBoxProps = {
+  onClose: () => void;
+};
+
+export default function ChatBox({ onClose }: ChatBoxProps) {
   const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -41,25 +46,40 @@ export default function ChatBox() {
   };
 
   return (
-    <div className="flex flex-col h-[90vh] border rounded-xl shadow-md max-w-3xl mx-auto">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-        {messages.map((msg, idx) => (
+    <div className="flex flex-col h-[50vh] border border-white bg-black shadow-md max-w-3xl mx-auto pt-4 pr-4">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-white p-2 transition"
+          aria-label="Close"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+        {messages.length === 0 ? (
+                  <div className="flex h-full items-center justify-center">
+          <p className="text-white font-bold text-lg text-center">
+            What can I help you with today?
+          </p>
+        </div>
+        ) : (
+        messages.map((msg, idx) => (
           <div
             key={idx}
             className={clsx(
               "max-w-md px-4 py-2 rounded-lg",
-              msg.role === "user" ? "bg-blue-100 self-start" : "bg-green-100 self-start"
+              msg.role === "user" ? "bg-blue-900 self-start text-white" : "bg-gray-900 self-start text-white"
             )}
           >
-            <p className="text-sm text-gray-800 whitespace-pre-wrap">{msg.content}</p>
+            <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
           </div>
-        ))}
-        {loading && <p className="text-sm text-gray-400">Thinking...</p>}
+        ))
+      )}
+      {loading && <p className="text-sm text-gray-400">Thinking...</p>}
       </div>
 
-      <div className="border-t p-4 bg-white flex items-center gap-2">
+      <div className="border-t p-4 bg-black flex items-center gap-2">
         <input
-          className=" text-black flex-1 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+          className=" text-white flex-1 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
           type="text"
           placeholder="Type your message..."
           value={input}
@@ -68,7 +88,7 @@ export default function ChatBox() {
         />
         <button
           onClick={handleSend}
-          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full p-2 transition"
+          className="bg-blue-900 hover:bg-blue-800 text-white rounded-full p-2 transition"
           disabled={loading}
           aria-label="Send message"
         >
