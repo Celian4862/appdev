@@ -79,7 +79,7 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
 
       <div className="border-t p-4 bg-black flex items-center gap-2">
         <input
-          className=" text-white flex-1 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
+          className="bg-black text-white flex-1 border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300"
           type="text"
           placeholder="Type your message..."
           value={input}
