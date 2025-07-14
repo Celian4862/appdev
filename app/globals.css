@@ -37,3 +37,17 @@ details[open] summary ~ * {
     transform: translateY(0);
   }
 }
+
+/* For Webkit-based browsers (Chrome, Edge, Safari) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: black;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 8px;
+}
