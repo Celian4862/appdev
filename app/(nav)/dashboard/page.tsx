@@ -12,8 +12,8 @@ export default function DashboardPage() {
   const [chatOpen, setChatOpen] = useState(false);
 
   return (
-    <div className="w-full bg-black p-32 px-8 relative">
-      <div className="mx-auto mt-16 max-w-7xl relative">
+    <div className="relative w-full bg-black p-32 px-8">
+      <div className="relative mx-auto mt-16 max-w-7xl">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white">Hi, {userName}!</h1>
           <button
@@ -52,7 +52,7 @@ export default function DashboardPage() {
             className="z-0" // removed rounded-lg here
           />
           <div className="absolute inset-0 bg-black opacity-60"></div>
-          <div className="relative z-10 m-8 flex h-full w-full flex-col items-start justify-center">
+          <div className="relative m-8 flex h-full w-full flex-col items-start justify-center">
             {hasRoadmap ? (
               <>
                 <p className="text-md text-white">Phase 1</p>
@@ -77,14 +77,13 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
-        
+
         {chatOpen && (
-          <div className="absolute right-0 top-0 h-full w-[35%]">
+          <div className="absolute top-0 right-0 h-full w-[35%]">
             <ChatBox onClose={() => setChatOpen(false)} />
           </div>
         )}
       </div>
-      
     </div>
   );
 }
