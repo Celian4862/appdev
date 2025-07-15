@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
 import "./globals.css";
 import Footer from "./ui/Footer";
@@ -24,6 +25,7 @@ export default function RootLayout({
           className="absolute top-0 right-0 -z-1 h-screen w-auto object-cover"
         />
         {children}
+        <Toaster position="top-center" />
         <Footer />
       </body>
     </html>

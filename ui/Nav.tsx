@@ -1,11 +1,16 @@
+// app/(nav)/ui/Nav.tsx
 import Link from "next/link";
 import Image from "next/image";
 import { FaUserCircle } from "react-icons/fa";
 import NavLink from "./client/NavLink";
+import LogoutButton from "@/app/(nav)/ui/LogoutButton";
+import  getServerSession from "next-auth";
 
-// Check app/(nav)/ui/Nav.tsx for additions
-export default function Nav() {
-  const logged_in = process.env.LOGGED_IN === "true"; // Placeholder session variable
+export default async function Nav() {
+  const { authOptions } = await import("@/lib/authOptions");
+  const session = await getServerSession(authOptions);
+  const logged_in = session && "user" in session && !!session.user;
+
   return (
     <nav
       className={`${
@@ -28,6 +33,7 @@ export default function Nav() {
       {logged_in ? (
         <>
           <FaUserCircle size={50} color="#ccc" />
+          <LogoutButton />
         </>
       ) : (
         <Link href="/login" className="block rounded-md border-2 px-5 py-1">
