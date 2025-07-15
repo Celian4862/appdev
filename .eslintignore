@@ -1,0 +1,8 @@
+# build
+node_modules/
+.next/
+dist/
+
+# prisma
+lib/generated/
+lib/prisma/runtime/

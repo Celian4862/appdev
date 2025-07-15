@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const runtime = 'nodejs';
+
 export async function GET() {
   for (let i = 0; i < 3; i++) {
   try {
