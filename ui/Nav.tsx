@@ -1,4 +1,4 @@
-// app/(nav)/ui/Nav.tsx
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { FaUserCircle } from "react-icons/fa";
