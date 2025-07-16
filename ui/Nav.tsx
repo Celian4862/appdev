@@ -10,7 +10,6 @@ import {auth} from "@/lib/auth";
 
 export default async function Nav() {
   const session = await auth(); 
-  console.log("[Nav] Session:", JSON.stringify(session, null, 2));
   const logged_in = !!session?.user;
 
   return (

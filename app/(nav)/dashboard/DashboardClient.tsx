@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import ChatBox from "../../components/ChatBox";
+import ChatBox from "@/app/components/ChatBox";
 import { useState } from "react";
 
 interface DashboardClientProps {
