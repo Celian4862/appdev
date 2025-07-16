@@ -3,8 +3,6 @@ export const runtime = "edge";
 
 import { auth } from "@/lib/auth"; // ✅ now a proper function
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import DashboardClient from "./DashboardClient";
 
 export default async function DashboardPage() {
