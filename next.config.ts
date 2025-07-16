@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  env: {
-    NEXT_PUBLIC_AUTH_SECRET: process.env.NEXT_PUBLIC_AUTH_SECRET,
+  // Remove the env section - AUTH_SECRET should not be public
+  experimental: {
+    // Enable experimental features for better performance if needed
   },
 };
 

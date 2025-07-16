@@ -1,12 +1,4 @@
-export const runtime = 'nodejs';
-
-// lib/auth.ts
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-const { prisma } = await import("@/lib/prisma");
 import { authOptions } from "./authOptions";
 
-// Add Prisma adapter
-authOptions.adapter = PrismaAdapter(prisma);
-
-export const { auth, signIn, signOut, handlers } = NextAuth(authOptions);
+export const { auth, handlers, signIn, signOut } = NextAuth(authOptions);

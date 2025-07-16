@@ -14,9 +14,12 @@ const eslintConfig = [
     ignores: [
       "**/node_modules/**",
       ".next/**",
-      "dist/**",
-      "lib/generated/**",
-      "lib/prisma/runtime/**",
+      "out/**", // Next.js static export output
+      "lib/generated/**", // Prisma generated files
+      "bun.lockb", // Bun binary lockfile
+      "*.tsbuildinfo", // TypeScript incremental build info
+      ".env*", // Environment files
+      ".vercel/**", // Vercel deployment files
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),

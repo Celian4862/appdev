@@ -1,3 +1,5 @@
+"use client";
+import { useFormStatus } from "react-dom";
 import AuthGoogle from "./AuthGoogle";
 import Link from "next/link";
 
@@ -12,7 +14,6 @@ export default function AuthForm({
   red_link, // URL to redirect to
   redirect, // text for the redirect link
   children,
-  errorMessage,
 }: {
   greet: string;
   desc: string;
@@ -22,8 +23,9 @@ export default function AuthForm({
   red_link: string;
   redirect: string;
   children?: React.ReactNode;
-  errorMessage?: string;
 }) {
+  const { pending } = useFormStatus();
+
   return (
     <div className="mb-10 flex justify-center">
       <div className="justify-content flex w-[40vw] flex-col gap-6 rounded-xl border-1 bg-black p-20">
@@ -40,14 +42,10 @@ export default function AuthForm({
             type="submit"
             className="w-full cursor-pointer rounded-md bg-white py-2 text-xl font-bold text-black active:bg-gray-400"
           >
-            {actionText}
+            {pending ? "Processing..." : actionText}
           </button>
         </form>
-        {errorMessage && (
-          <p className="mt-2 text-sm text-red-500 text-center">
-            {errorMessage}
-          </p>
-        )}
+        
         <div className="text-center">
           {red_desc}{" "}
           <Link href={red_link} className="text-blue-400">

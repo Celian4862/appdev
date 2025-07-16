@@ -1,34 +1,67 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { signUp } from "@/actions/auth/server";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useActionState } from "react";
+import { signIn } from "next-auth/react";
 import toast from "react-hot-toast";
 
-import FormInput from "@/ui/FormInput";
 import AuthForm from "@/ui/AuthForm";
+import FormInput from "@/ui/FormInput";
+import { signUp } from "@/actions/auth/server"; // ✅ server action
 
 const initialState: string | undefined = undefined;
 
 export default function SignUp() {
-  const [state, formAction] = useActionState(
-    async (_prevState: string | undefined, formData: FormData): Promise<string | undefined> => {
-      return await signUp(undefined, formData);
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [, formAction] = useActionState(
+    async (_prevState: string | undefined, formData: FormData) => {
+      setIsSubmitting(true);
+
+      const password = formData.get("password") as string;
+      const confirmPassword = formData.get("confirmPassword") as string;
+
+      if (password !== confirmPassword) {
+        toast.error("Passwords do not match.");
+        setIsSubmitting(false);
+        return "Passwords do not match.";
+      }
+
+      const result = await signUp(undefined, formData);
+
+      if (result === "Success!") {
+        toast.success("Account created! Logging in...");
+
+        const email = formData.get("email") as string;
+        const loginResult = await signIn("credentials", {
+          email,
+          password,
+          redirect: false,
+        });
+
+        if (loginResult?.ok) {
+          router.push("/dashboard");
+        } else {
+          toast.error("Login failed after sign up.");
+        }
+      } else {
+        toast.error(result || "Signup failed.");
+      }
+
+      setIsSubmitting(false);
+      return result;
     },
     initialState
   );
-
-  useEffect(() => {
-    if (state === "success") {
-      toast.success("Successfully registered! Redirecting...");
-    }
-  }, [state]);
 
   return (
     <AuthForm
       greet="Create your account"
       desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
       action={formAction}
-      actionText="Sign Up"
+      actionText={isSubmitting ? "Creating..." : "Sign Up"}
       red_desc="Already have an account?"
       red_link="/login"
       redirect="Sign in"
@@ -39,7 +72,11 @@ export default function SignUp() {
       </div>
       <FormInput label="Email" name="email" type="email" />
       <FormInput label="Password" name="password" type="password" />
-      <FormInput label="Confirm Password" name="confirmPassword" type="password" />
+      <FormInput
+        label="Confirm Password"
+        name="confirmPassword"
+        type="password"
+      />
     </AuthForm>
   );
 }

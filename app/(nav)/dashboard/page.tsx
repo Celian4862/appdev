@@ -1,23 +1,18 @@
-export const runtime = "nodejs";
+// app/(nav)/dashboard/page.tsx
+export const runtime = "edge";
 
-import getServerSession from "next-auth";
-import type { Session } from "next-auth";
+import { auth } from "@/lib/auth"; // ✅ now a proper function
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
 export default async function DashboardPage() {
-  const { authOptions } = await import("@/lib/authOptions");
-  const session = (await getServerSession(authOptions)) as unknown as Session;
+  const session = await auth();
+  console.log("[dashboard] session:", session);
 
-  const logged_in = !!session?.user && typeof session.user === "object";
-
-  if (!session?.user || !logged_in) {
-    return (
-      <main className="p-8">
-        <h1 className="text-xl font-bold">Unauthorized</h1>
-        <p className="text-gray-600">You must be logged in to view this page.</p>
-      </main>
-    );
+  if (!session?.user) {
+    console.log("[dashboard] No user in session");
+    redirect("/login");
   }
 
   const user = session.user;

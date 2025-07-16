@@ -1,5 +1,6 @@
 export const runtime = 'nodejs';
 
+// import type { User as NextAuthUser } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthConfig } from "next-auth";
 import Google from "next-auth/providers/google";
@@ -8,39 +9,57 @@ import bcrypt from "bcryptjs";
 import { prisma } from "./prisma";
 
 export const authOptions: NextAuthConfig = {
-  secret: process.env.NEXT_PUBLIC_AUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
         const email = credentials?.email as string;
         const password = credentials?.password as string;
 
+        console.log("[auth] Authorize called with:", { email });
+
         if (!email || !password) {
-          throw new Error("Missing email or password.");
+          console.log("[auth] Missing email or password");
+          return null;
         }
 
         const user = await prisma.user.findUnique({
           where: { email },
         });
 
-        if (!user || !user.password) {
-          throw new Error("Invalid credentials.");
+        if (!user) {
+          console.log("[auth] User not found:", email);
+          return null;
+        }
+
+        if (!user.password) {
+          console.log("[auth] User has no password — maybe OAuth-only account");
+          return null;
         }
 
         const isValid = await bcrypt.compare(password, user.password);
-        if (!isValid) throw new Error("Invalid credentials.");
+        console.log("[auth] Password match:", isValid);
 
-        return {
+        if (!isValid) {
+          console.log("[auth] Password mismatch");
+          return null;
+        }
+
+        const safeUser = {
           id: user.id,
           email: user.email,
-          name: user.firstName ? `${user.firstName} ${user.lastName}` : user.email,
+          name: user.name ?? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim(),
           image: user.image ?? undefined,
         };
+
+        console.log("[auth] Returning safe user for session:", safeUser);
+
+        return safeUser;
       },
     }),
     Google({
@@ -52,52 +71,73 @@ export const authOptions: NextAuthConfig = {
     signIn: "/login",
   },
   session: {
-    strategy: "database",
+    strategy: "jwt", // Change to JWT for credentials provider
   },
   callbacks: {
     async signIn({ user, account }) {
-    if (account?.provider === "google") {
-      const { access_token, id_token, providerAccountId } = account;
-
-      // Link account directly here instead of calling /api/link-google
-      await prisma.account.upsert({
-        where: {
-          provider_providerAccountId: {
-            provider: "google",
-            providerAccountId,
-          },
-        },
-        update: {},
-        create: {
-          userId: user.id, // user.id from your DB
-          provider: "google",
-          providerAccountId,
-          type: "oauth",
-          access_token,
-          id_token,
-          token_type: "bearer",
-          scope: account.scope ?? "openid email profile",
-          expires_at: Math.floor(Date.now() / 1000) + 3600,
-        },
-      });
-    }
-
-    return true;
-  },
-    async session({ session }) {
-      const dbUser = await prisma.user.findUnique({
-        where: { email: session.user?.email || "" },
-        select: { id: true, email: true, name: true },
-      });
-
-      if (session.user && dbUser) {
-        session.user.id = dbUser.id;
+      console.log("SIGNIN CALLBACK", user, account);
+      
+      // For credentials provider, ensure user exists in database
+      if (account?.provider === "credentials" && user?.email) {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: user.email }
+        });
+        
+        if (!dbUser) {
+          console.log("[auth] User not found in database during signIn");
+          return false;
+        }
+        
+        // Update user object with database ID
+        user.id = dbUser.id;
+      }
+      
+      return true;
+    },
+    async jwt({ token, user }) {
+      // When user signs in, add their info to the token
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        
+        // Fetch additional user data from database
+        if (user.email) {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: user.email },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              firstName: true,
+              lastName: true,
+              image: true,
+            },
+          });
+          
+          if (dbUser) {
+            token.id = dbUser.id;
+            token.firstName = dbUser.firstName;
+            token.lastName = dbUser.lastName;
+            token.image = dbUser.image;
+          }
+        }
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Send properties to the client
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.name = token.name ?? undefined;
+        session.user.firstName = token.firstName as string | undefined;
+        session.user.lastName = token.lastName as string | undefined;
+        session.user.image = token.image as string | undefined;
+        session.user.email = token.email ?? session.user.email;
       }
 
+      console.log("[auth] Session callback result:", session);
       return session;
     },
-    async jwt({ token}) {
-      return token;
-    }
   },
 };

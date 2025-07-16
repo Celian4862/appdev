@@ -1,56 +1,53 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
-import { authenticate } from "@/actions/auth/server";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useActionState } from "react";
 
 import AuthForm from "@/ui/AuthForm";
 import FormInput from "@/ui/FormInput";
-import Link from "next/link";
 
+// Initial state for useActionState (optional since we're not returning dynamic state)
 const initialState: string | undefined = undefined;
 
-export default function Login() {
-  const router = useRouter();
-  const [submitted, setSubmitted] = useState(false);
+export default function LoginPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [state, formAction] = useActionState(
-    async (_prevState: string | undefined, formData: FormData): Promise<string | undefined> => {
-      setSubmitted(true);
-      return await authenticate(undefined, formData);
+  const [, formAction] = useActionState(
+    async (_prevState: string | undefined, formData: FormData) => {
+      setIsSubmitting(true);
+
+      const email = formData.get("email") as string;
+      const password = formData.get("password") as string;
+
+      await signIn("credentials", {
+        email,
+        password,
+        redirect: true, // ✅ let NextAuth handle the redirect and session
+        callbackUrl: "/dashboard", // ✅ this ensures session is created fully
+      });
+
+      // If signIn returns (which it might not on redirect), reset submit state
+      setIsSubmitting(false);
+
+      // You could return something here for further client state if needed
+      return undefined;
     },
     initialState
   );
 
-  useEffect(() => {
-    if (submitted && state === undefined) {
-      router.push("/dashboard"); // only redirect after successful login
-    }
-  }, [state, submitted, router]);
-
   return (
     <AuthForm
       greet="Welcome back!"
-      desc="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+      desc="Log in to your account to continue."
       action={formAction}
-      actionText="Login"
-      red_desc="Don't have an account?"
+      actionText={isSubmitting ? "Logging in..." : "Login"}
+      red_desc="Don’t have an account?"
       red_link="/sign-up"
       redirect="Sign up"
     >
-      <FormInput label="Email" name="email" type="text" />
+      <FormInput label="Email" name="email" type="email" />
       <FormInput label="Password" name="password" type="password" />
-      {submitted && state && (
-        <p className="text-red-500 text-sm">{state}</p>
-      )}
-      <div className="flex justify-end">
-        <Link
-          href="/forgot-password"
-          className="text-sm text-blue-400 hover:underline"
-        >
-          Forgot Password?
-        </Link>
-      </div>
     </AuthForm>
   );
 }

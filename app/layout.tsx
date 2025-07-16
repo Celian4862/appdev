@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
 import "./globals.css";
 import Footer from "./ui/Footer";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "DevMate",
@@ -24,7 +25,9 @@ export default function RootLayout({
           priority={true}
           className="absolute top-0 right-0 -z-1 h-screen w-auto object-cover"
         />
-        {children}
+        <SessionProvider>
+          {children}
+        </SessionProvider>
         <Toaster position="top-center" />
         <Footer />
       </body>
