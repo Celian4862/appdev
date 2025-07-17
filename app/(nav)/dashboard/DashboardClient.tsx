@@ -20,7 +20,7 @@ export default function DashboardClient({ userName, hasRoadmap }: DashboardClien
           <h1 className="text-4xl font-bold text-white">Hi, {userName}!</h1>
           <button
             onClick={() => setChatOpen(!chatOpen)}
-            className="cursor-pointer rounded-lg border border-white bg-black px-6 py-2 text-lg font-semibold text-white transition duration-500 hover:border-1 hover:bg-white hover:text-black"
+            className="cursor-pointer rounded-lg border border-white bg-black px-6 py-2 text-lg font-semibold text-white transition duration-500 hover:border hover:bg-white hover:text-black"
           >
             Study Buddy
           </button>
