@@ -13,9 +13,8 @@ export default function AuthGoogle() {
 
   return (
     <button
-      type="button"
       onClick={handleGoogleSignIn}
-      className="block w-full cursor-pointer rounded-md border-2 py-2 text-center text-lg font-bold"
+      className="block w-full cursor-pointer rounded-md border-2 py-2 text-center text-lg font-bold">
       <FcGoogle className="mr-2 inline-block" />
       Continue with Google
     </button>
