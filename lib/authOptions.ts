@@ -95,7 +95,9 @@ export const authOptions: NextAuthConfig = {
     },
     async jwt({ token, user, trigger }) {
       try {
-        console.log("🔄 JWT Callback - Start", { hasUser: !!user, tokenId: token.id, trigger });
+        if (process.env.NODE_ENV === 'development') {
+          console.log("🔄 JWT Callback - Start", { hasUser: !!user, tokenId: token.id, trigger });
+        }
         
         // When user signs in, add their info to the token
         if (user) {
