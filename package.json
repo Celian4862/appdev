@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write 'app/**/*.{js,ts,jsx,tsx,json,css,md}'",
-    "db:seed": "bun run prisma/seed.ts"
+    "db:seed": "bun run prisma/seed.ts",
+    "deploy:db": "bun run scripts/deploy-db.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
