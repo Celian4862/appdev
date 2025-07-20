@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { saveUserPreferences, checkOnboardingStatus } from "@/actions/preferences/server";
 
 interface Track {
   id: number;
@@ -184,7 +183,7 @@ export default function TrackFlow() {
         <div className="text-center max-w-md">
           <div className="mb-4 text-2xl font-semibold text-red-400">No Data Available</div>
           <div className="text-gray-300 mb-6">
-            Unable to load tracks and topics. This might be because the database hasn't been seeded yet or there's a connection issue.
+            Unable to load tracks and topics. This might be because the database hasn&apos;t been seeded yet or there&apos;s a connection issue.
           </div>
           <div className="space-y-4">
             <button 

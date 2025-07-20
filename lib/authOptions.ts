@@ -92,7 +92,7 @@ export const authOptions: NextAuthConfig = {
       
       return true;
     },
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user }) {
       try {
         // When user signs in, add their info to the token
         if (user) {
