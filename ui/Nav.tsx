@@ -1,16 +1,23 @@
-export const runtime = "edge";
-
 import Link from "next/link";
 import Image from "next/image";
 import { FaUserCircle } from "react-icons/fa";
 import NavLink from "./client/NavLink";
 import LogoutButton from "@/app/(nav)/ui/LogoutButton";
-import {auth} from "@/lib/auth";
+import { auth } from "@/lib/auth";
 
 
 export default async function Nav() {
-  const session = await auth(); 
-  const logged_in = !!session?.user;
+  let session = null;
+  let logged_in = false;
+
+  try {
+    session = await auth();
+    logged_in = !!session?.user;
+  } catch (error) {
+    console.error("Auth error in Nav component:", error);
+    // Fallback to not logged in state
+    logged_in = false;
+  }
 
   return (
     <nav

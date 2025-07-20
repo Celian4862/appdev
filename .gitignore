@@ -47,3 +47,10 @@ next-env.d.ts
 # disabled files
 middleware.disabled.ts
 *.disabled.*
+
+# local development scripts and files
+/scripts/
+/app/test-api/
+/app/debug-session/
+test-server-action.ts
+check-db.*

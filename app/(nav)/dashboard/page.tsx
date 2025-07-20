@@ -1,5 +1,5 @@
 // app/(nav)/dashboard/page.tsx
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 import { auth } from "@/lib/auth"; // ✅ now a proper function
 import { redirect } from "next/navigation";
