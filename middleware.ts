@@ -20,8 +20,8 @@ export async function middleware(request: NextRequest) {
   const isOnboardingRoute = pathname.startsWith(onboardingRoute);
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  console.log("Middleware triggered on:", pathname);
-  console.log("User is authenticated:", isAuthenticated);
+  // Middleware triggered on: pathname
+  // User is authenticated: isAuthenticated
 
   // Handle unauthenticated users
   if (!isAuthenticated) {
