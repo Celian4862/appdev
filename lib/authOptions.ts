@@ -1,5 +1,3 @@
-export const runtime = 'nodejs';
-
 // import type { User as NextAuthUser } from "next-auth";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthConfig } from "next-auth";
@@ -94,50 +92,95 @@ export const authOptions: NextAuthConfig = {
       
       return true;
     },
-    async jwt({ token, user }) {
-      // When user signs in, add their info to the token
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.name = user.name;
-        
-        // Fetch additional user data from database
-        if (user.email) {
-          const dbUser = await prisma.user.findUnique({
-            where: { email: user.email },
-            select: {
-              id: true,
-              email: true,
-              name: true,
-              firstName: true,
-              lastName: true,
-              image: true,
-            },
-          });
+    async jwt({ token, user, trigger }) {
+      try {
+        // When user signs in, add their info to the token
+        if (user) {
+          token.id = user.id;
+          token.email = user.email;
+          token.name = user.name;
           
-          if (dbUser) {
-            token.id = dbUser.id;
-            token.firstName = dbUser.firstName;
-            token.lastName = dbUser.lastName;
-            token.image = dbUser.image;
+          // Fetch additional user data from database including onboarding status
+          if (user.email) {
+            try {
+              const dbUser = await prisma.user.findUnique({
+                where: { email: user.email },
+                select: {
+                  id: true,
+                  email: true,
+                  name: true,
+                  firstName: true,
+                  lastName: true,
+                  image: true,
+                  UserPreferences: true, // Include preferences to check onboarding
+                },
+              });
+              
+              if (dbUser) {
+                token.id = dbUser.id;
+                token.firstName = dbUser.firstName;
+                token.lastName = dbUser.lastName;
+                token.image = dbUser.image;
+                token.onboardingCompleted = !!dbUser.UserPreferences; // Check if user has preferences
+                token.lastOnboardingCheck = Date.now();
+              }
+            } catch (error) {
+              console.error("Error fetching user data during sign in:", error);
+              // Set safe defaults
+              token.onboardingCompleted = false;
+              token.lastOnboardingCheck = Date.now();
+            }
           }
         }
+        
+        // Always check onboarding status on every JWT callback to ensure immediate updates
+        // This ensures we catch onboarding completion as soon as possible
+        if (token.id) {
+          try {
+            console.log("🔄 Checking onboarding status for user:", token.id);
+            const userPreferences = await prisma.userPreferences.findUnique({
+              where: { userId: token.id as string },
+            });
+            const wasCompleted = token.onboardingCompleted;
+            token.onboardingCompleted = !!userPreferences;
+            token.lastOnboardingCheck = Date.now();
+            
+            if (!wasCompleted && token.onboardingCompleted) {
+              console.log("🎉 Onboarding completed detected for user:", token.id);
+            }
+          } catch (error) {
+            console.error("Error checking user preferences in JWT:", error);
+            // Don't break the session, keep existing value
+            token.lastOnboardingCheck = Date.now();
+          }
+        }
+        
+        return token;
+      } catch (error) {
+        console.error("Error in JWT callback:", error);
+        // Return token as-is to prevent session from breaking
+        return token;
       }
-      return token;
     },
     async session({ session, token }) {
-      // Send properties to the client
-      if (token && session.user) {
-        session.user.id = token.id as string;
-        session.user.name = token.name ?? undefined;
-        session.user.firstName = token.firstName as string | undefined;
-        session.user.lastName = token.lastName as string | undefined;
-        session.user.image = token.image as string | undefined;
-        session.user.email = token.email ?? session.user.email;
-      }
+      try {
+        // Send properties to the client
+        if (token && session.user) {
+          session.user.id = token.id as string;
+          session.user.name = token.name ?? undefined;
+          session.user.firstName = token.firstName as string | undefined;
+          session.user.lastName = token.lastName as string | undefined;
+          session.user.image = token.image as string | undefined;
+          session.user.email = token.email ?? session.user.email;
+        }
 
-      console.log("[auth] Session callback result:", session);
-      return session;
+        console.log("[auth] Session callback result:", session);
+        return session;
+      } catch (error) {
+        console.error("Error in session callback:", error);
+        // Return session as-is to prevent breaking
+        return session;
+      }
     },
   },
 };

@@ -64,6 +64,7 @@ model User {
   Account       Account[]
   Authenticator Authenticator[]
   Session       Session[]
+  UserPreferences UserPreferences?
 }
 
 model VerificationToken {
@@ -72,4 +73,60 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+}
+
+// User preferences models for onboarding flow
+model Track {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  UserPreferences UserPreferences[]
+}
+
+model Topic {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  UserTopicInterests UserTopicInterest[]
+}
+
+model UserPreferences {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  trackId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Likert scale confidence scores (1-5) for 10 questions
+  confidence1  Int? @default(0)
+  confidence2  Int? @default(0)
+  confidence3  Int? @default(0)
+  confidence4  Int? @default(0)
+  confidence5  Int? @default(0)
+  confidence6  Int? @default(0)
+  confidence7  Int? @default(0)
+  confidence8  Int? @default(0)
+  confidence9  Int? @default(0)
+  confidence10 Int? @default(0)
+  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track  Track  @relation(fields: [trackId], references: [id])
+  topicInterests UserTopicInterest[]
+}
+
+model UserTopicInterest {
+  id           String @id @default(cuid())
+  userId       String
+  topicId      Int
+  preferencesId String
+  createdAt    DateTime @default(now())
+  
+  topic        Topic           @relation(fields: [topicId], references: [id])
+  preferences  UserPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, topicId])
 }
