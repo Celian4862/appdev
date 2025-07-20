@@ -1,23 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import { FaUserCircle } from "react-icons/fa";
+import { useSession } from "next-auth/react";
 import NavLink from "./client/NavLink";
 import NavProfilePicture from "./client/NavProfilePicture";
-import LogoutButton from "@/app/(nav)/ui/LogoutButton";
-import { auth } from "@/lib/auth";
 
-export default async function Nav() {
-  let session = null;
-  let logged_in = false;
-
-  try {
-    session = await auth();
-    logged_in = !!session?.user;
-  } catch (error) {
-    console.error("Auth error in Nav component:", error);
-    // Fallback to not logged in state
-    logged_in = false;
-  }
+export default function Nav() {
+  const { data: session, status } = useSession();
+  const logged_in = status === "authenticated" && !!session?.user;
+  const loading = status === "loading";
 
   return (
     <nav
@@ -40,12 +32,16 @@ export default async function Nav() {
         <NavLink logged_in={logged_in} />
       </div>
 
-      {logged_in ? (
+      {loading ? (
+        // Show loading state while session is being determined
+        <div className="flex items-center gap-4">
+          <div className="h-8 w-8 animate-pulse rounded-full bg-gray-700"></div>
+        </div>
+      ) : logged_in ? (
         <div className="flex items-center gap-4">
           <Link href="/profile" className="transition-colors hover:opacity-80">
             <NavProfilePicture imageUrl={session?.user?.image} />
           </Link>
-          <LogoutButton />
         </div>
       ) : (
         <Link href="/login" className="block rounded-md border-2 px-5 py-1">

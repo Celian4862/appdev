@@ -34,8 +34,6 @@ export async function middleware(request: NextRequest) {
   // Handle authenticated users
   if (isAuthenticated && token?.id) {
     const hasCompletedOnboarding = token.onboardingCompleted === true;
-    
-    console.log("User onboarding completed:", hasCompletedOnboarding);
 
     // If onboarding is completed
     if (hasCompletedOnboarding) {

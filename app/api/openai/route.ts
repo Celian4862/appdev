@@ -5,7 +5,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY || "",
   baseURL: "https://openrouter.ai/api/v1", // 👈 important!
   defaultHeaders: {
-    "HTTP-Referer": "http://localhost:3000", // 🟡 set your local or deployed domain
+    "HTTP-Referer": process.env.NEXTAUTH_URL || "http://localhost:3000", // � production-ready
     "X-Title": "DevMate App", // 🟣 any short name you want
   },
 });

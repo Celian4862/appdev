@@ -1,4 +1,4 @@
-import Nav from "@/ui/Nav";
+import Nav from "@/ui/Nav-client";
 export default function Layout({
   children,
 }: Readonly<{
