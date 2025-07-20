@@ -57,17 +57,16 @@ export async function POST(request: NextRequest) {
         data: {
           userId: session.user.id,
           trackId: validatedData.trackId,
-          confidence1: validatedData.confidence[0],
-          confidence2: validatedData.confidence[1],
-          confidence3: validatedData.confidence[2],
-          confidence4: validatedData.confidence[3],
-          confidence5: validatedData.confidence[4],
-          confidence6: validatedData.confidence[5],
-          confidence7: validatedData.confidence[6],
-          confidence8: validatedData.confidence[7],
-          confidence9: validatedData.confidence[8],
-          confidence10: validatedData.confidence[9],
         },
+      });
+
+      // Create confidence scores
+      await tx.confidenceScore.createMany({
+        data: validatedData.confidence.map((score, index) => ({
+          preferencesId: userPreferences.id,
+          questionId: index + 1, // 1-based question IDs
+          score,
+        })),
       });
 
       // Create topic interests

@@ -5,6 +5,9 @@
  * This script should be run during deployment to ensure
  * the database is properly migrated and seeded.
  * 
+ * IMPORTANT: This includes schema migrations that refactor
+ * confidence scores from numbered fields to a proper relational model.
+ * 
  * Usage:
  *   bun run scripts/deploy-db.ts
  * 

@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { confidenceScoresToArray } from "@/lib/confidenceScoreUtils";
 
 const userPreferencesSchema = z.object({
   trackId: z.number().int().positive(),
@@ -65,17 +66,16 @@ export async function saveUserPreferences(data: {
         data: {
           userId: session.user.id,
           trackId: validatedData.trackId,
-          confidence1: validatedData.confidence[0],
-          confidence2: validatedData.confidence[1],
-          confidence3: validatedData.confidence[2],
-          confidence4: validatedData.confidence[3],
-          confidence5: validatedData.confidence[4],
-          confidence6: validatedData.confidence[5],
-          confidence7: validatedData.confidence[6],
-          confidence8: validatedData.confidence[7],
-          confidence9: validatedData.confidence[8],
-          confidence10: validatedData.confidence[9],
         },
+      });
+
+      // Create confidence scores
+      await tx.confidenceScore.createMany({
+        data: validatedData.confidence.map((score, index) => ({
+          preferencesId: userPreferences.id,
+          questionId: index + 1, // 1-based question IDs
+          score,
+        })),
       });
 
       // Create topic interests
@@ -154,8 +154,45 @@ export async function hasUserCompletedOnboarding(): Promise<boolean> {
 }
 
 /**
- * Get user preferences
+ * Get user preferences with confidence scores in array format (for backward compatibility)
  */
+export async function getUserPreferencesWithArrayScores() {
+  try {
+    const session = await auth();
+    
+    if (!session?.user?.id) {
+      return null;
+    }
+
+    const preferences = await prisma.userPreferences.findUnique({
+      where: { userId: session.user.id },
+      include: {
+        track: true,
+        confidenceScores: {
+          orderBy: { questionId: "asc" },
+        },
+        topicInterests: {
+          include: {
+            topic: true,
+          },
+        },
+      },
+    });
+
+    if (!preferences) return null;
+
+    // Convert confidence scores to array format for backward compatibility
+    const confidenceArray = confidenceScoresToArray(preferences.confidenceScores);
+
+    return {
+      ...preferences,
+      confidence: confidenceArray, // Add array format
+    };
+  } catch (error) {
+    console.error("Error fetching user preferences:", error);
+    return null;
+  }
+}
 export async function getUserPreferences() {
   try {
     const session = await auth();
@@ -168,6 +205,9 @@ export async function getUserPreferences() {
       where: { userId: session.user.id },
       include: {
         track: true,
+        confidenceScores: {
+          orderBy: { questionId: "asc" },
+        },
         topicInterests: {
           include: {
             topic: true,

@@ -101,21 +101,23 @@ model UserPreferences {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  // Likert scale confidence scores (1-5) for 10 questions
-  confidence1  Int? @default(0)
-  confidence2  Int? @default(0)
-  confidence3  Int? @default(0)
-  confidence4  Int? @default(0)
-  confidence5  Int? @default(0)
-  confidence6  Int? @default(0)
-  confidence7  Int? @default(0)
-  confidence8  Int? @default(0)
-  confidence9  Int? @default(0)
-  confidence10 Int? @default(0)
-  
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   track  Track  @relation(fields: [trackId], references: [id])
   topicInterests UserTopicInterest[]
+  confidenceScores ConfidenceScore[]
+}
+
+model ConfidenceScore {
+  id              String @id @default(cuid())
+  preferencesId   String
+  questionId      Int    // 1-10 for the 10 confidence questions
+  score           Int    // 0-5 Likert scale
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  preferences     UserPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+  
+  @@unique([preferencesId, questionId])
 }
 
 model UserTopicInterest {
