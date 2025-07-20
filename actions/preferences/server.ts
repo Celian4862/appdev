@@ -187,8 +187,6 @@ export async function getUserPreferences() {
  * Get all available tracks and topics for onboarding
  */
 export async function getOnboardingData() {
-  "use server";
-  
   try {
     console.log("🔍 getOnboardingData called");
     
