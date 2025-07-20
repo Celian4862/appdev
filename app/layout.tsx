@@ -25,7 +25,7 @@ export default function RootLayout({
           priority={true}
           className="absolute top-0 right-0 -z-1 h-screen w-auto object-cover"
         />
-        <SessionProvider>
+        <SessionProvider basePath="/api/auth">
           {children}
         </SessionProvider>
         <Toaster position="top-center" />
