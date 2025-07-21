@@ -75,12 +75,12 @@ export default function AssessmentPage() {
                     <li>Read each question carefully before answering</li>
                     <li>You can use the Code tab to test your solutions</li>
                     <li>Use the Study Buddy for hints if you get stuck</li>
-                    <li>Submit your answers when you're confident</li>
+                    <li>Submit your answers when you&apos;re confident</li>
                   </ul>
                   
                   <div className="mt-6 p-4 bg-blue-600/20 border border-blue-500/50 rounded">
                     <h5 className="font-semibold mb-2">Sample Question:</h5>
-                    <p className="mb-4">This is a placeholder quiz question for "{quizName}". In a real implementation, this would load the actual quiz questions from your database.</p>
+                    <p className="mb-4">This is a placeholder quiz question for &quot;{quizName}&quot;. In a real implementation, this would load the actual quiz questions from your database.</p>
                     
                     <div className="space-y-2">
                       <label className="flex items-center space-x-2">
