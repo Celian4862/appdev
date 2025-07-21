@@ -8,6 +8,7 @@ import { prisma } from "./prisma";
 
 export const authOptions: NextAuthConfig = {
   secret: process.env.AUTH_SECRET,
+  trustHost: true, // Required for Vercel deployments
   adapter: PrismaAdapter(prisma),
   providers: [
     Credentials({
@@ -94,6 +95,8 @@ export const authOptions: NextAuthConfig = {
     },
     async jwt({ token, user }) {
       try {
+        console.log("🔄 JWT Callback - Start", { hasUser: !!user, tokenId: token.id });
+        
         // When user signs in, add their info to the token
         if (user) {
           token.id = user.id;
@@ -133,25 +136,37 @@ export const authOptions: NextAuthConfig = {
           }
         }
         
-        // Always check onboarding status on every JWT callback to ensure immediate updates
-        // This ensures we catch onboarding completion as soon as possible
+        // Check onboarding status periodically (every 5 minutes) instead of every request
+        // This reduces database load and prevents auth failures from cold connections
         if (token.id) {
-          try {
-            console.log("🔄 Checking onboarding status for user:", token.id);
-            const userPreferences = await prisma.userPreferences.findUnique({
-              where: { userId: token.id as string },
-            });
-            const wasCompleted = token.onboardingCompleted;
-            token.onboardingCompleted = !!userPreferences;
-            token.lastOnboardingCheck = Date.now();
-            
-            if (!wasCompleted && token.onboardingCompleted) {
-              console.log("🎉 Onboarding completed detected for user:", token.id);
+          const now = Date.now();
+          const lastCheck = token.lastOnboardingCheck as number || 0;
+          const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+          
+          // Only check if it's been more than 5 minutes since last check
+          // OR if onboarding is not yet completed (check more frequently for completion)
+          if (!token.onboardingCompleted || (now - lastCheck) > fiveMinutes) {
+            try {
+              console.log("🔄 Checking onboarding status for user:", token.id);
+              const userPreferences = await prisma.userPreferences.findUnique({
+                where: { userId: token.id as string },
+              });
+              const wasCompleted = token.onboardingCompleted;
+              token.onboardingCompleted = !!userPreferences;
+              token.lastOnboardingCheck = now;
+              
+              if (!wasCompleted && token.onboardingCompleted) {
+                console.log("🎉 Onboarding completed detected for user:", token.id);
+              }
+            } catch (error) {
+              console.error("❌ Error checking user preferences in JWT:", error);
+              // Don't break the session, keep existing value and delay next check
+              token.lastOnboardingCheck = now;
+              // If this is a fresh token without onboarding status, assume not completed
+              if (token.onboardingCompleted === undefined) {
+                token.onboardingCompleted = false;
+              }
             }
-          } catch (error) {
-            console.error("Error checking user preferences in JWT:", error);
-            // Don't break the session, keep existing value
-            token.lastOnboardingCheck = Date.now();
           }
         }
         
