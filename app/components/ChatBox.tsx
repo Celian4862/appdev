@@ -51,7 +51,7 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
   };
 
   return (
-    <div className="flex flex-col h-[50vh] border border-white bg-black shadow-md max-w-3xl mx-auto pt-4 pr-4">
+    <div className="flex flex-col h-full w-full relative bg-black border border-white shadow-md">
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-white p-2 transition"
