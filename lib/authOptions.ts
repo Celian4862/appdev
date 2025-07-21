@@ -89,7 +89,11 @@ export const authOptions: NextAuthConfig = {
   callbacks: {
     async signIn({ user, account }) {
       if (process.env.NODE_ENV === 'development') {
-        console.log("SIGNIN CALLBACK", user, account);
+        console.log("SIGNIN CALLBACK", {
+          userId: user?.id,
+          userEmail: user?.email,
+          accountProvider: account?.provider,
+        });
       }
       
       // For credentials provider, ensure user exists in database
