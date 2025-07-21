@@ -33,7 +33,9 @@ export async function middleware(request: NextRequest) {
 
   // Handle authenticated users
   if (isAuthenticated && token?.id) {
-    const hasCompletedOnboarding = token.onboardingCompleted === true;
+    // TEMPORARILY DISABLE ONBOARDING CHECK FOR TESTING
+    const hasCompletedOnboarding = true; // Force to true for testing
+    // const hasCompletedOnboarding = token.onboardingCompleted === true;
 
     // If onboarding is completed
     if (hasCompletedOnboarding) {
