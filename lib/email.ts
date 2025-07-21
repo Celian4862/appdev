@@ -74,13 +74,13 @@ export async function sendPasswordResetEmail({ to, resetUrl }: SendPasswordReset
     });
 
     if (error) {
-      console.error('Email sending error:', error);
+      if (process.env.NODE_ENV === "development") { console.error('Email sending error:', error); }
       throw new Error('Failed to send password reset email');
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error('Password reset email error:', error);
+    if (process.env.NODE_ENV === "development") { console.error('Password reset email error:', error); }
     throw error;
   }
 }

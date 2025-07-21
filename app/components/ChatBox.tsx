@@ -29,14 +29,14 @@ export default function ChatBox({ onClose }: ChatBoxProps) {
         body: JSON.stringify({ messages: updatedMessages }),
       });
       if (!res.ok) {
-        console.error(`Error: Received status ${res.status} from API`);
+        if (process.env.NODE_ENV === "development") { console.error(`Error: Received status ${res.status} from API`); }
         return;
       }
       const data = await res.json();
       const newAIMessage = { role: "assistant" as const, content: data.reply };
       setMessages((prev) => [...prev, newAIMessage]);
     } catch (err) {
-      console.error("Error sending prompt:", err);
+      if (process.env.NODE_ENV === "development") { console.error("Error sending prompt:", err); }
       alert("Failed to send your message. Please try again.");
     } finally {
       setLoading(false);

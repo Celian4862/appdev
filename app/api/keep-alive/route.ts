@@ -19,7 +19,7 @@ export async function GET() {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('[keep-alive] Ping failed:', error);
+    if (process.env.NODE_ENV === "development") { console.error('[keep-alive] Ping failed:', error); }
     return NextResponse.json({ 
       status: 'error', 
       error: error instanceof Error ? error.message : 'Unknown error' 

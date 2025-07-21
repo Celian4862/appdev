@@ -85,7 +85,7 @@ export default function ChangePasswordClient() {
       }, 2000);
 
     } catch (error) {
-      console.error("Error changing password:", error);
+      if (process.env.NODE_ENV === "development") { console.error("Error changing password:", error); }
       setMessage({ 
         type: 'error', 
         text: error instanceof Error ? error.message : 'Failed to change password. Please try again.' 

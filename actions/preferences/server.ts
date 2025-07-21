@@ -91,17 +91,13 @@ export async function saveUserPreferences(data: {
     // Force a token refresh by revalidating auth-related paths
     revalidatePath("/dashboard");
     revalidatePath("/track-selection");
-    revalidatePath("/");
-
-    console.log("✅ User preferences saved successfully for user:", session.user.id);
-
-    return { success: true };
+    revalidatePath("/");return { success: true };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return { success: false, error: "Invalid input data" };
     }
 
-    console.error("Error saving user preferences:", error);
+    if (process.env.NODE_ENV === "development") { console.error("Error saving user preferences:", error); }
     return { success: false, error: "Failed to save preferences" };
   }
 }
@@ -121,12 +117,9 @@ export async function checkOnboardingStatus(): Promise<{ completed: boolean }> {
       where: { userId: session.user.id },
     });
 
-    const completed = !!preferences;
-    console.log("🔍 Onboarding status check for user:", session.user.id, "completed:", completed);
-    
-    return { completed };
+    const completed = !!preferences;return { completed };
   } catch (error) {
-    console.error("Error checking onboarding status:", error);
+    if (process.env.NODE_ENV === "development") { console.error("Error checking onboarding status:", error); }
     return { completed: false };
   }
 }
@@ -148,7 +141,7 @@ export async function hasUserCompletedOnboarding(): Promise<boolean> {
 
     return !!preferences;
   } catch (error) {
-    console.error("Error checking onboarding status:", error);
+    if (process.env.NODE_ENV === "development") { console.error("Error checking onboarding status:", error); }
     return false;
   }
 }
@@ -189,7 +182,7 @@ export async function getUserPreferencesWithArrayScores() {
       confidence: confidenceArray, // Add array format
     };
   } catch (error) {
-    console.error("Error fetching user preferences:", error);
+    if (process.env.NODE_ENV === "development") { console.error("Error fetching user preferences:", error); }
     return null;
   }
 }
@@ -218,7 +211,7 @@ export async function getUserPreferences() {
 
     return preferences;
   } catch (error) {
-    console.error("Error fetching user preferences:", error);
+    if (process.env.NODE_ENV === "development") { console.error("Error fetching user preferences:", error); }
     return null;
   }
 }
@@ -227,28 +220,16 @@ export async function getUserPreferences() {
  * Get all available tracks and topics for onboarding
  */
 export async function getOnboardingData() {
-  try {
-    console.log("🔍 getOnboardingData called");
-    
-    const [tracks, topics] = await Promise.all([
+  try {const [tracks, topics] = await Promise.all([
       prisma.track.findMany({
         orderBy: { id: "asc" },
       }),
       prisma.topic.findMany({
         orderBy: { id: "asc" },
       }),
-    ]);
-
-    console.log("📊 Database query results:");
-    console.log("🎯 Tracks found:", tracks.length, tracks);
-    console.log("📝 Topics found:", topics.length, topics);
-
-    const result = { tracks, topics };
-    console.log("🔄 Returning result:", result);
-    
-    return result;
+    ]);const result = { tracks, topics };return result;
   } catch (error) {
-    console.error("❌ Error fetching onboarding data:", error);
+    if (process.env.NODE_ENV === "development") { console.error("❌ Error fetching onboarding data:", error); }
     return { tracks: [], topics: [] };
   }
 }

@@ -43,7 +43,7 @@ export async function signUp(
       return err.issues?.[0]?.message ?? "Invalid input.";
     }
 
-    console.error("Signup error:", err);
+    if (process.env.NODE_ENV === "development") { console.error("Signup error:", err); }
     return "Something went wrong.";
   }
 }

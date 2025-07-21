@@ -72,7 +72,7 @@ export default function ProfileClient({ initialData }: ProfileClientProps) {
       setMessage({ type: 'success', text: 'Profile picture uploaded successfully!' });
 
     } catch (error) {
-      console.error("Error uploading image:", error);
+      if (process.env.NODE_ENV === "development") { console.error("Error uploading image:", error); }
       setMessage({ 
         type: 'error', 
         text: error instanceof Error ? error.message : 'Failed to upload image. Please try again.' 
@@ -113,7 +113,7 @@ export default function ProfileClient({ initialData }: ProfileClientProps) {
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
 
     } catch (error) {
-      console.error("Error saving profile:", error);
+      if (process.env.NODE_ENV === "development") { console.error("Error saving profile:", error); }
       setMessage({ 
         type: 'error', 
         text: error instanceof Error ? error.message : 'Failed to update profile. Please try again.' 

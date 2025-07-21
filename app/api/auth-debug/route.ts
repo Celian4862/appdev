@@ -5,41 +5,25 @@ import { auth } from "@/lib/auth";
 export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
-  try {
-    console.log("🔍 Auth Debug - Starting diagnostics...");
-    
-    // Check environment variables
+  try {// Check environment variables
     const hasAuthSecret = !!process.env.AUTH_SECRET;
     const hasGoogleId = !!process.env.AUTH_GOOGLE_ID;
     const hasGoogleSecret = !!process.env.AUTH_GOOGLE_SECRET;
-    const hasDatabaseUrl = !!process.env.DATABASE_URL;
-    
-    console.log("📋 Environment Check:", {
-      AUTH_SECRET: hasAuthSecret,
-      AUTH_GOOGLE_ID: hasGoogleId,
-      AUTH_GOOGLE_SECRET: hasGoogleSecret,
-      DATABASE_URL: hasDatabaseUrl,
-    });
-    
-    // Try to get token using JWT method
+    const hasDatabaseUrl = !!process.env.DATABASE_URL;// Try to get token using JWT method
     let jwtToken = null;
     try {
       jwtToken = await getToken({
         req: request,
         secret: process.env.AUTH_SECRET,
-      });
-      console.log("🎫 JWT Token:", jwtToken ? "Found" : "Not found");
-    } catch (jwtError) {
-      console.error("❌ JWT Token Error:", jwtError);
+      });} catch (jwtError) {
+      if (process.env.NODE_ENV === "development") { console.error("❌ JWT Token Error:", jwtError); }
     }
     
     // Try to get session using auth()
     let session = null;
     try {
-      session = await auth();
-      console.log("🔐 Session:", session ? "Found" : "Not found");
-    } catch (sessionError) {
-      console.error("❌ Session Error:", sessionError);
+      session = await auth();} catch (sessionError) {
+      if (process.env.NODE_ENV === "development") { console.error("❌ Session Error:", sessionError); }
     }
     
     // Check cookies
@@ -88,7 +72,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(diagnostics, { status: 200 });
     
   } catch (error) {
-    console.error("❌ Auth Debug Error:", error);
+    if (process.env.NODE_ENV === "development") { console.error("❌ Auth Debug Error:", error); }
     return NextResponse.json({ 
       error: "Auth debug failed",
       message: error instanceof Error ? error.message : "Unknown error",

@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
       });
 
     } catch (error) {
-      console.error("Error sending reset email:", error);
+      if (process.env.NODE_ENV === "development") { console.error("Error sending reset email:", error); }
       setMessage({ 
         type: 'error', 
         text: error instanceof Error ? error.message : 'Failed to send reset email. Please try again.' 
