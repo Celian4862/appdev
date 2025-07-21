@@ -14,8 +14,8 @@ export default function DashboardClient({ userName, hasRoadmap }: DashboardClien
   const [chatOpen, setChatOpen] = useState(false);
 
   return (
-    <div className="relative w-full bg-black p-32 px-8">
-      <div className="relative mx-auto mt-16 max-w-7xl">
+    <div className="w-full min-h-screen bg-black pt-24 px-8 relative flex transition-all duration-500">
+      <div className={`transition-all duration-500 ${chatOpen ? "w-2/3" : "w-full"} p-10`}>
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-4xl font-bold text-white">Hi, {userName}!</h1>
           <button
@@ -79,13 +79,13 @@ export default function DashboardClient({ userName, hasRoadmap }: DashboardClien
             )}
           </div>
         </div>
-
-        {chatOpen && (
-          <div className="absolute top-0 right-0 h-full w-[35%]">
-            <ChatBox onClose={() => setChatOpen(false)} />
-          </div>
-        )}
       </div>
+      {/* Chat box container */}
+      {chatOpen && (
+        <div className="w-1/3 h-screen border-l border-white">
+          <ChatBox onClose={() => setChatOpen(false)} />
+        </div>
+      )}
     </div>
   );
 }
