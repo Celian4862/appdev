@@ -6,15 +6,10 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
-    secureCookie: true, // Use secureCookie for HTTPS environments like Vercel
-    // Add these for better consistency
-    salt: "authjs.session-token",
-    cookieName: process.env.NODE_ENV === "production" 
-      ? "__Secure-authjs.session-token" 
-      : "authjs.session-token"
+    secureCookie: true, // This was the only critical fix needed for Vercel
   });
 
-  const isAuthenticated = !!token?.id; // Changed to check token.id specifically
+  const isAuthenticated = !!token?.id;
   const pathname = request.nextUrl.pathname;
   
   // Define route types
