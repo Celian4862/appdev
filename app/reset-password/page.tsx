@@ -39,7 +39,7 @@ function ResetPasswordForm() {
 
         setIsTokenValid(response.ok);
       } catch (error) {
-        console.error("Error verifying token:", error);
+        if (process.env.NODE_ENV === "development") { console.error("Error verifying token:", error); }
         setIsTokenValid(false);
       }
     };
@@ -99,7 +99,7 @@ function ResetPasswordForm() {
       }, 3000);
 
     } catch (error) {
-      console.error("Error resetting password:", error);
+      if (process.env.NODE_ENV === "development") { console.error("Error resetting password:", error); }
       setMessage({ 
         type: 'error', 
         text: error instanceof Error ? error.message : 'Failed to reset password. Please try again.' 

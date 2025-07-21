@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { writeFile, mkdir, unlink } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import { Buffer } from 'buffer';
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,11 +66,9 @@ export async function POST(request: NextRequest) {
         const oldFileName = currentUser.image.replace('/uploads/profiles/', '');
         const oldFilePath = join(uploadDir, oldFileName);
         if (existsSync(oldFilePath)) {
-          await unlink(oldFilePath);
-          console.log(`Deleted old profile image: ${oldFileName}`);
-        }
+          await unlink(oldFilePath);}
       } catch (deleteError) {
-        console.error('Error deleting old profile image:', deleteError);
+        if (process.env.NODE_ENV === "development") { console.error('Error deleting old profile image:', deleteError); }
         // Don't fail the upload if old file deletion fails
       }
     }
@@ -90,7 +89,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Upload error:', error);
+    if (process.env.NODE_ENV === "development") { console.error('Upload error:', error); }
     return NextResponse.json({ 
       error: 'Internal server error' 
     }, { status: 500 });

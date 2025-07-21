@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Change password error:', error);
+    if (process.env.NODE_ENV === "development") { console.error('Change password error:', error); }
     return NextResponse.json({ 
       error: 'Internal server error' 
     }, { status: 500 });

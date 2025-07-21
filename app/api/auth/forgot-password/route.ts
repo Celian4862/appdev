@@ -74,13 +74,15 @@ export async function POST(request: NextRequest) {
         });
       } else {
         // Development fallback - log to console
-        console.log('🔐 Development Mode - Password Reset Link:');
-        console.log('Email:', email);
-        console.log('Reset URL:', resetUrl);
-        console.log('Token expires:', resetTokenExpiry.toISOString());
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🔐 Development Mode - Password Reset Link:');
+          console.log('Email:', email);
+          console.log('Reset URL:', resetUrl);
+          console.log('Token expires:', resetTokenExpiry.toISOString());
+        }
       }
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
+      if (process.env.NODE_ENV === "development") { console.error('Email sending failed:', emailError); }
       // Don't fail the request if email fails - user still gets success message for security
     }
 
@@ -94,7 +96,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Error in forgot password:", error);
+    if (process.env.NODE_ENV === "development") { console.error("Error in forgot password:", error); }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

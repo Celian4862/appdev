@@ -20,10 +20,10 @@ export const authOptions: NextAuthConfig = {
         const email = credentials?.email as string;
         const password = credentials?.password as string;
 
-        console.log("[auth] Authorize called with:", { email });
+        if (process.env.NODE_ENV === 'development') {}
 
         if (!email || !password) {
-          console.log("[auth] Missing email or password");
+          if (process.env.NODE_ENV === 'development') {}
           return null;
         }
 
@@ -32,20 +32,20 @@ export const authOptions: NextAuthConfig = {
         });
 
         if (!user) {
-          console.log("[auth] User not found:", email);
+          if (process.env.NODE_ENV === 'development') {}
           return null;
         }
 
         if (!user.password) {
-          console.log("[auth] User has no password — maybe OAuth-only account");
+          if (process.env.NODE_ENV === 'development') {}
           return null;
         }
 
         const isValid = await bcrypt.compare(password, user.password);
-        console.log("[auth] Password match:", isValid);
+        if (process.env.NODE_ENV === 'development') {}
 
         if (!isValid) {
-          console.log("[auth] Password mismatch");
+          if (process.env.NODE_ENV === 'development') {}
           return null;
         }
 
@@ -56,7 +56,7 @@ export const authOptions: NextAuthConfig = {
           image: user.image ?? undefined,
         };
 
-        console.log("[auth] Returning safe user for session:", safeUser);
+        if (process.env.NODE_ENV === 'development') {}
 
         return safeUser;
       },
@@ -74,7 +74,7 @@ export const authOptions: NextAuthConfig = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      console.log("SIGNIN CALLBACK", user, account);
+      if (process.env.NODE_ENV === 'development') {}
       
       // For credentials provider, ensure user exists in database
       if (account?.provider === "credentials" && user?.email) {
@@ -83,7 +83,7 @@ export const authOptions: NextAuthConfig = {
         });
         
         if (!dbUser) {
-          console.log("[auth] User not found in database during signIn");
+          if (process.env.NODE_ENV === 'development') {}
           return false;
         }
         
@@ -95,9 +95,7 @@ export const authOptions: NextAuthConfig = {
     },
     async jwt({ token, user, trigger }) {
       try {
-        if (process.env.NODE_ENV === 'development') {
-          console.log("🔄 JWT Callback - Start", { hasUser: !!user, tokenId: token.id, trigger });
-        }
+        if (process.env.NODE_ENV === 'development') {}
         
         // When user signs in, add their info to the token
         if (user) {
@@ -130,7 +128,7 @@ export const authOptions: NextAuthConfig = {
                 token.lastOnboardingCheck = Date.now();
               }
             } catch (error) {
-              console.error("Error fetching user data during sign in:", error);
+              if (process.env.NODE_ENV === "development") { console.error("Error fetching user data during sign in:", error); }
               // Set safe defaults
               token.onboardingCompleted = false;
               token.lastOnboardingCheck = Date.now();
@@ -151,10 +149,7 @@ export const authOptions: NextAuthConfig = {
                                (now - lastCheck) > fiveMinutes;
           
           if (shouldRefresh) {
-            try {
-              console.log("🔄 Refreshing profile data for user:", token.id, "trigger:", trigger);
-              
-              // Fetch both preferences and updated profile data
+            try {// Fetch both preferences and updated profile data
               const [userPreferences, userData] = await Promise.all([
                 prisma.userPreferences.findUnique({
                   where: { userId: token.id as string },
@@ -179,19 +174,11 @@ export const authOptions: NextAuthConfig = {
                 token.firstName = userData.firstName;
                 token.lastName = userData.lastName;
                 token.image = userData.image;
-                token.name = userData.name;
-                console.log("🔄 Updated profile data in token:", {
-                  firstName: userData.firstName,
-                  lastName: userData.lastName,
-                  hasImage: !!userData.image
-                });
-              }
+                token.name = userData.name;}
               
-              if (!wasCompleted && token.onboardingCompleted) {
-                console.log("🎉 Onboarding completed detected for user:", token.id);
-              }
+              if (!wasCompleted && token.onboardingCompleted) {}
             } catch (error) {
-              console.error("❌ Error checking user preferences and profile data in JWT:", error);
+              if (process.env.NODE_ENV === "development") { console.error("❌ Error checking user preferences and profile data in JWT:", error); }
               // Don't break the session, keep existing value and delay next check
               token.lastOnboardingCheck = now;
               // If this is a fresh token without onboarding status, assume not completed
@@ -204,7 +191,7 @@ export const authOptions: NextAuthConfig = {
         
         return token;
       } catch (error) {
-        console.error("Error in JWT callback:", error);
+        if (process.env.NODE_ENV === "development") { console.error("Error in JWT callback:", error); }
         // Return token as-is to prevent session from breaking
         return token;
       }
@@ -219,12 +206,9 @@ export const authOptions: NextAuthConfig = {
           session.user.lastName = token.lastName as string | undefined;
           session.user.image = token.image as string | undefined;
           session.user.email = token.email ?? session.user.email;
-        }
-
-        console.log("[auth] Session callback result:", session);
-        return session;
+        }return session;
       } catch (error) {
-        console.error("Error in session callback:", error);
+        if (process.env.NODE_ENV === "development") { console.error("Error in session callback:", error); }
         // Return session as-is to prevent breaking
         return session;
       }
