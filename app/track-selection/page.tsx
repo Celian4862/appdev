@@ -52,6 +52,7 @@ export default function TrackFlow() {
     loadData();
   }, []);
 
+  // Track selection handler
   const handleTrackSelect = (trackId: number) => setSelectedTrack(trackId);
 
   const handleTopicToggle = (topicId: number) => {
