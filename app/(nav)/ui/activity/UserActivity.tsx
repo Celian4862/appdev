@@ -5,7 +5,7 @@ import Terminal from './terminal';
 export default function Home() {
   return (
     <form>
-      <div className="min-h-screen bg-gradient-to-br from-zinc-950 to-black p-8 text-white font-sans">
+      <div className="min-h-sm bg-gradient-to-br from-zinc-950 to-black p-8 text-white font-sans">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between border-b border-gray-700 pb-4">
           <h1 className="text-2xl font-bold tracking-wide">Activity (Roadmap)</h1>

@@ -11,7 +11,7 @@ export default function Terminal() {
 
   return (
     <>
-      <div className="flex items-center justify-between rounded-t-lg bg-zinc-900 px-4 py-2">
+      <div className="min-h-sm flex items-center justify-between rounded-t-lg bg-zinc-900 px-4 py-2">
         <span className="text-sm text-gray-400">make.c</span>
         <button
           type="button"
