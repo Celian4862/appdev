@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
+import { SessionProvider } from "@/components/providers/SessionProvider";
 import "./globals.css";
 import Footer from "./ui/Footer";
-import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "DevMate",

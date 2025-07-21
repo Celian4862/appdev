@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast"; // Changed from react-toastify to react-hot-toast
 
 interface Track {
   id: number;
@@ -54,6 +55,7 @@ export default function TrackSelectionPage() {
     loadData();
   }, []);
 
+  // Track selection handler
   const handleTrackSelect = (trackId: number) => setSelectedTrack(trackId);
 
   const handleTopicToggle = (topicId: number) => {
@@ -91,26 +93,11 @@ export default function TrackSelectionPage() {
   const handleBack = () => setStep(step - 1);
 
   const handleSubmit = async () => {
-    // Validate all steps are completed
-    if (selectedTrack === null) {
-      alert("Please select a track.");
-      return;
-    }
-    
-    if (selectedTopics.length === 0) {
-      alert("Please select at least one topic.");
-      return;
-    }
-
-    // Check if all confidence questions are answered (not 0)
-    const unansweredQuestions = confidence.filter(score => score === 0).length;
-    if (unansweredQuestions > 0) {
-      alert(`Please answer all ${confidence.length} questions. You have ${unansweredQuestions} unanswered question(s).`);
-      return;
-    }
+    if (!selectedTrack || selectedTopics.length === 0) return;
 
     setSubmitting(true);
-    try {const response = await fetch("/api/complete-onboarding", {
+    try {
+      const response = await fetch("/api/complete-onboarding", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,6 +112,14 @@ export default function TrackSelectionPage() {
       const result = await response.json();
 
       if (result.success) {
+        // Show success message
+        toast.success("Setup completed successfully!");
+        
+        // Reload page after 7 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 7000);
+        
         // Session will automatically refresh on next request due to JWT token update
         // No need to force refresh - this prevents excessive API calls
         router.replace("/dashboard");

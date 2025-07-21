@@ -6,10 +6,10 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
-    secureCookie: true, // Use secureCookie for HTTPS environments like Vercel
+    secureCookie: true, // This was the only critical fix needed for Vercel
   });
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!token?.id;
   const pathname = request.nextUrl.pathname;
   
   // Define route types
@@ -31,7 +31,6 @@ export async function middleware(request: NextRequest) {
 
   // Handle authenticated users
   if (isAuthenticated && token?.id) {
-    // Restore proper onboarding check
     const hasCompletedOnboarding = token.onboardingCompleted === true;
 
     // If onboarding is completed

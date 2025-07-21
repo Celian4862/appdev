@@ -43,7 +43,7 @@ export default function LoginPage() {
           // Use router.push since client-side Nav will detect session change
           setTimeout(() => {
             router.push("/dashboard");
-          }, 1000);
+          }, 4000);
         } else {
           // Handle different error types
           if (result?.error === "CredentialsSignin") {
