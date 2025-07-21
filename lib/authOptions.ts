@@ -136,16 +136,18 @@ export const authOptions: NextAuthConfig = {
           }
         }
         
-        // Check onboarding status and profile data periodically OR when manually updated
-        // More conservative in production to prevent Vercel timeouts
+        // Check onboarding status VERY conservatively in production
+        // Only check database when absolutely necessary
         if (token.id) {
           const now = Date.now();
           const lastCheck = token.lastOnboardingCheck as number || 0;
           const isProduction = process.env.NODE_ENV === 'production';
-          const checkInterval = isProduction ? (30 * 60 * 1000) : (5 * 60 * 1000); // 30min prod, 5min dev
           
-          // ONLY refresh database on explicit trigger or when onboarding is incomplete AND interval passed
-          // This minimizes database hits to prevent Vercel timeouts
+          // In production: only check DB every 2 hours or on explicit update
+          // In development: check every 5 minutes for faster testing
+          const checkInterval = isProduction ? (2 * 60 * 60 * 1000) : (5 * 60 * 1000);
+          
+          // MINIMAL database hits: only when manually triggered or onboarding incomplete AND long interval
           const shouldRefresh = trigger === 'update' || 
                                (!token.onboardingCompleted && (now - lastCheck) > checkInterval);
                                
