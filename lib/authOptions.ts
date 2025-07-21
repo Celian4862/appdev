@@ -69,7 +69,7 @@ export const authOptions: NextAuthConfig = {
         };
 
         if (process.env.NODE_ENV === 'development') {
-          console.log("[auth] Returning safe user for session:", safeUser);
+          console.log("[auth] Returning safe user for session:", { id: safeUser.id, email: safeUser.email });
         }
 
         return safeUser;
