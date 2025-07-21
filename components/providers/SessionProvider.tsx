@@ -5,10 +5,9 @@ import { ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
-  basePath?: string;
 }
 
-export function SessionProvider({ children, basePath }: Props) {
+export function SessionProvider({ children }: Props) {
   return (
     <NextAuthSessionProvider 
       refetchInterval={0} // Disable automatic refetching temporarily
