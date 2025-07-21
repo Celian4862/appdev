@@ -18,7 +18,7 @@ export default function Nav() {
     <nav
       className={`${
         logged_in ? "border-b-2 border-white bg-black" : ""
-      } fixed z-50 flex w-full flex-wrap items-center justify-around py-8 *:font-bold`}
+      } flex w-full flex-wrap items-center justify-around py-8 *:font-bold`}
     >
       <Link href="/" className="flex items-center gap-2">
         <Image
@@ -31,8 +31,32 @@ export default function Nav() {
         <span className="text-3xl">DevMate</span>
       </Link>
 
-      <div className="flex flex-wrap items-center gap-10">
-        <NavLink />
+      <div className="flex flex-wrap items-center">
+        {!logged_in ? (
+          // Show public navigation when NOT authenticated
+          <div className="flex flex-wrap items-center gap-12">
+            <Link href="/" className="hover:opacity-80">
+              Home
+            </Link>
+            <Link href="/#features" className="hover:opacity-80">
+              Features
+            </Link>
+            <Link href="/#how-it-works" className="hover:opacity-80">
+              How It Works
+            </Link>
+            <Link href="/#faq" className="hover:opacity-80">
+              FAQ
+            </Link>
+            <Link href="/tracks" className="hover:opacity-80">
+              Tracks
+            </Link>
+          </div>
+        ) : (
+          // Show authenticated navigation when logged in
+          <div className="flex flex-wrap items-center gap-10">
+            <NavLink />
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -42,7 +66,10 @@ export default function Nav() {
         </div>
       ) : logged_in ? (
         <div className="flex items-center gap-4">
-          <Link href="/profile" className="transition-colors hover:opacity-80">
+          <Link
+            href="/profile"
+            className="transition-colors hover:opacity-80"
+          >
             <NavProfilePicture imageUrl={session?.user?.image} />
           </Link>
         </div>
