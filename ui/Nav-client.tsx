@@ -31,10 +31,10 @@ export default function Nav() {
         <span className="text-3xl">DevMate</span>
       </Link>
 
-      <div className="flex flex-wrap items-center gap-6">
+      <div className="flex flex-wrap items-center">
         {!logged_in ? (
           // Show public navigation when NOT authenticated
-          <>
+          <div className="flex flex-wrap items-center gap-12">
             <Link href="/" className="hover:opacity-80">
               Home
             </Link>
@@ -50,10 +50,12 @@ export default function Nav() {
             <Link href="/tracks" className="hover:opacity-80">
               Tracks
             </Link>
-          </>
+          </div>
         ) : (
           // Show authenticated navigation when logged in
-          <NavLink />
+          <div className="flex flex-wrap items-center gap-10">
+            <NavLink />
+          </div>
         )}
       </div>
 
