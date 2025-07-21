@@ -173,7 +173,10 @@ export const authOptions: NextAuthConfig = {
                     })
                   ]),
                   timeoutPromise
-                ]) as [any, any];
+                ]) as [
+                  { userId: string } | null, // userPreferences
+                  { firstName: string | null; lastName: string | null; image: string | null; name: string | null } | null // userData
+                ];
                 
                 const wasCompleted = token.onboardingCompleted;
                 token.onboardingCompleted = !!userPreferences;

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 interface Track {
   id: number;
@@ -26,7 +25,7 @@ export default function TrackFlow() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
-  const { update } = useSession();
+  // Removed useSession() since we no longer force session refresh
 
   // Load tracks and topics on component mount
   useEffect(() => {
