@@ -22,9 +22,15 @@ export async function GET() {
     await prisma.$connect();const [tracks, topics] = await Promise.all([
       prisma.track.findMany({
         orderBy: { id: "asc" },
+        include: {
+          topics: true, // Include related topics for each track
+        },
       }),
       prisma.topic.findMany({
         orderBy: { id: "asc" },
+        include: {
+          track: true, // Include the track information for each topic
+        },
       }),
     ]);// Check if database has been properly seeded
     if (tracks.length === 0 || topics.length === 0) {

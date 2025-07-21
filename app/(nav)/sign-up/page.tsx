@@ -42,7 +42,7 @@ export default function SignUp() {
         });
 
         if (loginResult?.ok) {
-          router.push("/dashboard");
+          router.push("/track-selection");
         } else {
           toast.error("Login failed after sign up.");
         }
