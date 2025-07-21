@@ -16,9 +16,19 @@
  */
 
 import { exec } from "child_process";
-import { promisify } from "util";
 
-const execAsync = promisify(exec);
+// Promisify exec manually since util import is having issues
+const execAsync = (command: string): Promise<{ stdout: string; stderr: string }> => {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+  });
+};
 
 async function deployDatabase() {
   console.log("🚀 Starting database deployment...");

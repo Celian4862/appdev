@@ -31,32 +31,19 @@ export default function TrackFlow() {
   // Load tracks and topics on component mount
   useEffect(() => {
     async function loadData() {
-      try {
-        console.log("🔍 Starting to load onboarding data via API...");
-        
-        const response = await fetch("/api/onboarding-data");
-        console.log("� API response status:", response.status);
-        
-        if (!response.ok) {
+      try {const response = await fetch("/api/onboarding-data");if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        const data = await response.json();
-        console.log("📊 Received data:", data);
-        
-        if (data && typeof data === 'object') {
-          console.log("🎯 Tracks count:", data.tracks?.length || 0);
-          console.log("📝 Topics count:", data.topics?.length || 0);
-          
-          setTracks(data.tracks || []);
+        const data = await response.json();if (data && typeof data === 'object') {setTracks(data.tracks || []);
           setTopics(data.topics || []);
         } else {
-          console.error("❌ Invalid data structure");
+          if (process.env.NODE_ENV === "development") { console.error("❌ Invalid data structure"); }
           setTracks([]);
           setTopics([]);
         }
       } catch (error) {
-        console.error("❌ Failed to load onboarding data:", error);
+        if (process.env.NODE_ENV === "development") { console.error("❌ Failed to load onboarding data:", error); }
         setTracks([]);
         setTopics([]);
       } finally {
@@ -122,10 +109,7 @@ export default function TrackFlow() {
     }
 
     setSubmitting(true);
-    try {
-      console.log("💾 Saving user preferences via API...");
-      
-      const response = await fetch("/api/complete-onboarding", {
+    try {const response = await fetch("/api/complete-onboarding", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -139,27 +123,16 @@ export default function TrackFlow() {
 
       const result = await response.json();
 
-      if (result.success) {
-        console.log("✅ Preferences saved successfully, forcing session refresh...");
-        
-        // Force a session update to refresh the JWT token
-        await update({ forceRefresh: true });
-        
-        console.log("🔄 Session updated, waiting a moment for middleware to process...");
-        
-        // Small delay to ensure session is fully updated
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        console.log("🎯 Redirecting to dashboard...");
-        
-        // Use router.replace for a clean navigation
+      if (result.success) {// Force a session update to refresh the JWT token
+        await update({ forceRefresh: true });// Small delay to ensure session is fully updated
+        await new Promise(resolve => setTimeout(resolve, 1000));// Use router.replace for a clean navigation
         router.replace("/dashboard");
       } else {
         alert(result.error || "Failed to save preferences. Please try again.");
         setSubmitting(false);
       }
     } catch (error) {
-      console.error("Error saving preferences:", error);
+      if (process.env.NODE_ENV === "development") { console.error("Error saving preferences:", error); }
       alert("An error occurred. Please try again.");
       setSubmitting(false);
     }

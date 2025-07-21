@@ -77,11 +77,7 @@ export async function POST(request: NextRequest) {
           preferencesId: userPreferences.id,
         })),
       });
-    });
-
-    console.log("✅ User preferences saved successfully for user:", session.user.id);
-
-    // Force revalidation
+    });// Force revalidation
     revalidatePath("/dashboard");
     revalidatePath("/track-selection");
     revalidatePath("/");
@@ -103,7 +99,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Invalid input data" }, { status: 400 });
     }
 
-    console.error("Error saving user preferences:", error);
+    if (process.env.NODE_ENV === "development") { console.error("Error saving user preferences:", error); }
     return NextResponse.json({ success: false, error: "Failed to save preferences" }, { status: 500 });
   }
 }

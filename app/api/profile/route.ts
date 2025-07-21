@@ -66,7 +66,7 @@ export async function PUT(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Profile update error:', error);
+    if (process.env.NODE_ENV === "development") { console.error('Profile update error:', error); }
     return NextResponse.json({ 
       error: 'Internal server error' 
     }, { status: 500 });

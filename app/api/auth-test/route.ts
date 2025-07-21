@@ -4,16 +4,11 @@ import { auth } from "@/lib/auth";
 export const runtime = "nodejs";
 
 export async function GET() {
-  try {
-    console.log("🔍 Auth Test - Starting...");
-    
-    // Test basic auth function
+  try {// Test basic auth function
     let authResult = null;
     try {
-      authResult = await auth();
-      console.log("✅ Auth function works:", authResult ? "Session found" : "No session");
-    } catch (authError) {
-      console.error("❌ Auth function error:", authError);
+      authResult = await auth();} catch (authError) {
+      if (process.env.NODE_ENV === "development") { console.error("❌ Auth function error:", authError); }
     }
     
     // Test environment variables
@@ -23,10 +18,7 @@ export async function GET() {
       AUTH_GOOGLE_SECRET: !!process.env.AUTH_GOOGLE_SECRET,
       DATABASE_URL: !!process.env.DATABASE_URL,
       NODE_ENV: process.env.NODE_ENV,
-    };
-    console.log("📋 Environment:", envCheck);
-    
-    // Test database connection
+    };// Test database connection
     let dbTest = null;
     try {
       const { prisma } = await import("@/lib/prisma");
@@ -34,7 +26,7 @@ export async function GET() {
       dbTest = "Connected";
       await prisma.$disconnect();
     } catch (dbError) {
-      console.error("❌ Database error:", dbError);
+      if (process.env.NODE_ENV === "development") { console.error("❌ Database error:", dbError); }
       dbTest = `Error: ${dbError instanceof Error ? dbError.message : 'Unknown'}`;
     }
     
@@ -50,7 +42,7 @@ export async function GET() {
     });
     
   } catch (error) {
-    console.error("❌ Auth test failed:", error);
+    if (process.env.NODE_ENV === "development") { console.error("❌ Auth test failed:", error); }
     return NextResponse.json({
       error: "Auth test failed",
       message: error instanceof Error ? error.message : "Unknown error",

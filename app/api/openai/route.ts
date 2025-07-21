@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ reply: completion.choices[0].message.content });
   } catch (err: unknown) {
-    console.error("OpenRouter error:", err);
+    if (process.env.NODE_ENV === "development") { console.error("OpenRouter error:", err); }
     return NextResponse.json(
       { reply: "An error occurred. Please try again later." },
       { status: 500 }

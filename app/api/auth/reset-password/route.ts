@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Error resetting password:", error);
+    if (process.env.NODE_ENV === "development") { console.error("Error resetting password:", error); }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
