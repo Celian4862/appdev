@@ -18,7 +18,8 @@ interface Topic {
 
 export default function TrackSelectionPage() {
   const [step, setStep] = useState(1);
-  const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
+  // const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
+  const [selectedTrack, setSelectedTrack] = useState<number | null>(null);
   const [selectedTopics, setSelectedTopics] = useState<number[]>([]);
 
   const [confidence, setConfidence] = useState<number[]>(Array(10).fill(0));

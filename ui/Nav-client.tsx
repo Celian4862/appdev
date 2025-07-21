@@ -29,7 +29,7 @@ export default function Nav() {
       </Link>
 
       <div className="flex flex-wrap items-center gap-10">
-        <NavLink logged_in={logged_in} />
+        <NavLink />
       </div>
 
       {loading ? (
