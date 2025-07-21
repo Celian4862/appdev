@@ -86,14 +86,18 @@ model Track {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   UserPreferences UserPreferences[]
+  topics      Topic[] // One track can have many topics
 }
 
 model Topic {
   id          Int    @id @default(autoincrement())
   name        String @unique
   description String?
+  trackId     Int?   // Optional - null means it's a general topic
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  track       Track? @relation(fields: [trackId], references: [id], onDelete: SetNull)
   UserTopicInterests UserTopicInterest[]
 }
 

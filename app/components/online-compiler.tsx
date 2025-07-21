@@ -4,7 +4,10 @@ import { useState } from "react";
 import { Play } from "lucide-react";
 import dynamic from "next/dynamic";
 
-const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
+const Editor = dynamic(() => import("@monaco-editor/react"), { 
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center h-full text-white">Loading editor...</div>
+});
 
 interface OnlineCompilerProps {
   exerciseName?: string | null;
@@ -86,11 +89,11 @@ export default function OnlineCompiler({ exerciseName }: OnlineCompilerProps) {
         </div>
 
         <div className="flex-1">
-          <MonacoEditor
+          <Editor
             height="100%"
             defaultLanguage={monacoLanguageMap[language]}
             value={code}
-            onChange={(newValue) => setCode(newValue || "")}
+            onChange={(newValue: string | undefined) => setCode(newValue || "")}
             theme="vs-dark"
             options={{
               fontSize: 14,

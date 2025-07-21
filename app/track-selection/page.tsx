@@ -14,6 +14,11 @@ interface Topic {
   id: number;
   name: string;
   description: string | null;
+  trackId: number | null;
+  track?: {
+    id: number;
+    name: string;
+  } | null;
 }
 
 export default function TrackSelectionPage() {
@@ -134,6 +139,12 @@ export default function TrackSelectionPage() {
     }
   };
 
+  // Filter topics based on selected track
+  const filteredTopics = topics.filter(topic => {
+    // Include general topics (trackId is null) and topics for the selected track
+    return topic.trackId === null || topic.trackId === selectedTrack;
+  });
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-black via-blue-900 to-cyan-400 text-white">
@@ -213,10 +224,10 @@ export default function TrackSelectionPage() {
               Select your topics of interest.
             </h1>
             <p className="text-gray-300">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Choose from topics related to your selected track, plus general development topics.
             </p>
             <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
-              {topics.map((topic) => (
+              {filteredTopics.map((topic) => (
                 <button
                   key={topic.id}
                   onClick={() => handleTopicToggle(topic.id)}
