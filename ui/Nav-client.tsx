@@ -7,11 +7,9 @@ import NavLink from "./client/NavLink";
 import NavProfilePicture from "./client/NavProfilePicture";
 
 export default function Nav() {
-  // Optimize session polling to reduce API calls
+  // Session will be managed by SessionProvider configuration in layout.tsx
   const { data: session, status } = useSession({
     required: false,
-    refetchInterval: 0, // Disable automatic refetching
-    refetchOnWindowFocus: false, // Don't refetch when window regains focus
   });
   const logged_in = status === "authenticated" && !!session?.user;
   const loading = status === "loading";
