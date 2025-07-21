@@ -3,6 +3,10 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
+  // Debug environment
+  console.log(`[MIDDLEWARE-DEBUG] AUTH_SECRET exists: ${!!process.env.AUTH_SECRET}`);
+  console.log(`[MIDDLEWARE-DEBUG] Cookies: ${request.headers.get('cookie')?.substring(0, 100)}...`);
+  
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
@@ -13,6 +17,7 @@ export async function middleware(request: NextRequest) {
   
   // ADD DEBUGGING
   console.log(`[MIDDLEWARE] ${pathname} - Auth: ${isAuthenticated}, Token: ${!!token}, UserId: ${token?.id}`);
+  console.log(`[MIDDLEWARE-DEBUG] Full token:`, token);
   
   // Define route types
   const publicRoutes = ["/login", "/sign-up"];
