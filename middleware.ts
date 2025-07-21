@@ -6,6 +6,7 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
+    secureCookie: true, // Use secureCookie for HTTPS environments like Vercel
   });
 
   const isAuthenticated = !!token;
@@ -20,9 +21,6 @@ export async function middleware(request: NextRequest) {
   const isOnboardingRoute = pathname.startsWith(onboardingRoute);
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  // Middleware triggered on: pathname
-  // User is authenticated: isAuthenticated
-
   // Handle unauthenticated users
   if (!isAuthenticated) {
     if (isPublicRoute) {
@@ -33,6 +31,7 @@ export async function middleware(request: NextRequest) {
 
   // Handle authenticated users
   if (isAuthenticated && token?.id) {
+    // Restore proper onboarding check
     const hasCompletedOnboarding = token.onboardingCompleted === true;
 
     // If onboarding is completed
@@ -76,9 +75,13 @@ export async function middleware(request: NextRequest) {
 // Apply middleware to protected routes
 export const config = {
   matcher: [
+    "/dashboard",
     "/dashboard/:path*", 
+    "/roadmap",
     "/roadmap/:path*", 
+    "/settings",
     "/settings/:path*", 
+    "/track-selection",
     "/track-selection/:path*",
     "/login",
     "/sign-up"
