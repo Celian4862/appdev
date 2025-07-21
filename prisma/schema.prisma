@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+  user                 User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String          @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  firstName     String?
+  lastName      String?
+  password      String?
+  resetToken    String?
+  resetTokenExpiry DateTime?
+  Account       Account[]
+  Authenticator Authenticator[]
+  Session       Session[]
+  UserPreferences UserPreferences?
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// User preferences models for onboarding flow
+model Track {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  UserPreferences UserPreferences[]
+}
+
+model Topic {
+  id          Int    @id @default(autoincrement())
+  name        String @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  UserTopicInterests UserTopicInterest[]
+}
+
+model UserPreferences {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  trackId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track  Track  @relation(fields: [trackId], references: [id])
+  topicInterests UserTopicInterest[]
+  confidenceScores ConfidenceScore[]
+}
+
+model ConfidenceScore {
+  id              String @id @default(cuid())
+  preferencesId   String
+  questionId      Int    // 1-10 for the 10 confidence questions
+  score           Int    // 0-5 Likert scale
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  preferences     UserPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+  
+  @@unique([preferencesId, questionId])
+}
+
+model UserTopicInterest {
+  id           String @id @default(cuid())
+  userId       String
+  topicId      Int
+  preferencesId String
+  createdAt    DateTime @default(now())
+  
+  topic        Topic           @relation(fields: [topicId], references: [id])
+  preferences  UserPreferences @relation(fields: [preferencesId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, topicId])
+}

@@ -2,14 +2,27 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaUserCircle } from "react-icons/fa";
 import NavLink from "./client/NavLink";
+import NavProfilePicture from "./client/NavProfilePicture";
+import LogoutButton from "@/app/(nav)/ui/LogoutButton";
+import { auth } from "@/lib/auth";
 
-// Check app/(nav)/ui/Nav.tsx for additions
-export default function Nav() {
-  const logged_in = process.env.LOGGED_IN === "true"; // Placeholder session variable
+export default async function Nav() {
+  let session = null;
+  let logged_in = false;
+
+  try {
+    session = await auth();
+    logged_in = !!session?.user;
+  } catch (error) {
+    console.error("Auth error in Nav component:", error);
+    // Fallback to not logged in state
+    logged_in = false;
+  }
+
   return (
     <nav
       className={`${
-        logged_in && "border-b-2 border-white bg-black"
+        logged_in ? "border-b-2 border-white bg-black" : ""
       } fixed z-50 flex w-full flex-wrap items-center justify-around py-8 *:font-bold`}
     >
       <Link href="/" className="flex items-center gap-2">
@@ -22,6 +35,7 @@ export default function Nav() {
         />
         <span className="text-3xl">DevMate</span>
       </Link>
+
       <div className="flex flex-wrap items-center gap-10">
         {!logged_in ? (
           ["home", "features", "how-it-works", "tracks", "faq"].map(
@@ -39,10 +53,14 @@ export default function Nav() {
           <NavLink />
         )}
       </div>
+
       {logged_in ? (
-        <>
-          <FaUserCircle size={50} color="#ccc" />
-        </>
+        <div className="flex items-center gap-4">
+          <Link href="/profile" className="transition-colors hover:opacity-80">
+            <NavProfilePicture imageUrl={session?.user?.image} />
+          </Link>
+          <LogoutButton />
+        </div>
       ) : (
         <Link href="/login" className="block rounded-md border-2 px-5 py-1">
           Login

@@ -40,3 +40,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma
+/lib/generated/prisma
+
+# disabled files
+middleware.disabled.ts
+*.disabled.*
+
+# uploaded files
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/*/.gitkeep
+
+# local development scripts and files
+/scripts/
+/app/test-api/
+/app/debug-session/
+test-server-action.ts
+check-db.*
