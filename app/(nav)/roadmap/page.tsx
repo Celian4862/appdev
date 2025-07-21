@@ -208,11 +208,11 @@ export default function RoadmapPage() {
                   <div className="h-3 flex-1 overflow-hidden rounded-full bg-white/30">
                     <div
                       className="h-full rounded-full bg-blue-600 transition-all"
-                      style={{ width: `${roadmap.progress}%` }}
+                      style={{ width: `${roadmap.progress || 0}%` }}
                     ></div>
                   </div>
                   <span className="ml-4 font-semibold text-white">
-                    {roadmap.progress}%
+                    {roadmap.progress || 0}%
                   </span>
                 </div>
                 <p className="text-md text-white">Track</p>
@@ -321,15 +321,15 @@ export default function RoadmapPage() {
                 <span className="font-medium">Track:</span> {roadmap.trackName}
               </div>
               <div>
-                <span className="font-medium">Confidence Level:</span> {roadmap.confidenceLevel.toFixed(1)}/5.0
+                <span className="font-medium">Confidence Level:</span> {roadmap.confidenceLevel?.toFixed(1) || 'N/A'}/5.0
               </div>
               <div className="md:col-span-2">
-                <span className="font-medium">Interested Topics:</span> {roadmap.userTopics.join(", ")}
+                <span className="font-medium">Interested Topics:</span> {roadmap.userTopics?.join(", ") || 'None specified'}
               </div>
             </div>
           </div>
 
-          {roadmap.phases.map((phase, index) => (
+          {roadmap.phases?.map((phase, index) => (
             <div
               key={index}
               className="relative mt-10 min-h-[300px] overflow-hidden rounded-lg border-2 border-white p-12 shadow-md"
