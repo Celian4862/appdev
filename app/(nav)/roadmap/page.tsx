@@ -362,7 +362,7 @@ export default function RoadmapPage() {
                 <div>
                   <h6 className="font-semibold text-white mb-2">Learning Objectives:</h6>
                   <ul className="text-sm text-white/90 space-y-1">
-                    {phase.objectives.map((objective, i) => (
+                    {phase.objectives?.map((objective, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <span className="text-blue-400 mt-1">•</span>
                         {objective}
@@ -374,7 +374,7 @@ export default function RoadmapPage() {
                 <div>
                   <h6 className="font-semibold text-white mb-2">Key Topics:</h6>
                   <div className="flex flex-wrap gap-2">
-                    {phase.topics.map((topic, i) => (
+                    {phase.topics?.map((topic, i) => (
                       <span
                         key={i}
                         className="px-3 py-1 bg-blue-600/30 text-white text-sm rounded-full"
@@ -388,10 +388,10 @@ export default function RoadmapPage() {
 
               <div className="mb-6">
                 <h6 className="font-semibold text-white mb-2">
-                  Activities ({phase.activities.length}) - Est. {phase.estimatedDays} days
+                  Activities ({phase.activities?.length || 0}) - Est. {phase.estimatedDays} days
                 </h6>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {phase.activities.map((activity, i) => (
+                  {phase.activities?.map((activity, i) => (
                     <div key={i} className={`p-4 rounded-lg transition-all ${
                       activity.completed 
                         ? 'bg-green-600/20 border border-green-500/50' 
@@ -424,11 +424,11 @@ export default function RoadmapPage() {
                 </div>
               </div>
 
-              {phase.prerequisites.length > 0 && (
+              {phase.prerequisites?.length > 0 && (
                 <div className="mb-6">
                   <h6 className="font-semibold text-white mb-2">Prerequisites:</h6>
                   <ul className="text-sm text-white/90">
-                    {phase.prerequisites.map((prereq, i) => (
+                    {phase.prerequisites?.map((prereq, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <span className="text-yellow-400 mt-1">⚠</span>
                         {prereq}
