@@ -18,7 +18,7 @@ export default function Nav() {
     <nav
       className={`${
         logged_in ? "border-b-2 border-white bg-black" : ""
-      } fixed z-50 flex w-full flex-wrap items-center justify-around py-8 *:font-bold`}
+      } flex w-full flex-wrap items-center justify-around py-8 *:font-bold`}
     >
       <Link href="/" className="flex items-center gap-2">
         <Image
@@ -31,7 +31,7 @@ export default function Nav() {
         <span className="text-3xl">DevMate</span>
       </Link>
 
-      <div className="flex flex-wrap items-center gap-10">
+      <div className="flex flex-wrap items-center gap-6">
         {!logged_in ? (
           // Show public navigation when NOT authenticated
           <>
