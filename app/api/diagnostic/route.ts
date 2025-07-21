@@ -20,7 +20,12 @@ export async function GET(request: NextRequest) {
     };
 
     // 2. Test JWT token (middleware method)
-    let jwtResult = { success: false, error: null, data: null, timing: 0 };
+    let jwtResult: { success: boolean; error: string | null; data: any; timing: number } = { 
+      success: false, 
+      error: null, 
+      data: null, 
+      timing: 0 
+    };
     try {
       const jwtStart = Date.now();
       const token = await getToken({
@@ -47,7 +52,12 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Test server auth (dashboard method)
-    let authResult = { success: false, error: null, data: null, timing: 0 };
+    let authResult: { success: boolean; error: string | null; data: any; timing: number } = { 
+      success: false, 
+      error: null, 
+      data: null, 
+      timing: 0 
+    };
     try {
       const authStart = Date.now();
       const session = await auth();
@@ -70,7 +80,11 @@ export async function GET(request: NextRequest) {
     }
 
     // 4. Test database connection
-    let dbResult = { success: false, error: null, timing: 0 };
+    let dbResult: { success: boolean; error: string | null; timing: number } = { 
+      success: false, 
+      error: null, 
+      timing: 0 
+    };
     try {
       const dbStart = Date.now();
       const { prisma } = await import("@/lib/prisma");

@@ -20,10 +20,10 @@ export const authOptions: NextAuthConfig = {
         const email = credentials?.email as string;
         const password = credentials?.password as string;
 
-        if (process.env.NODE_ENV === 'development') {}
+        console.log("[auth] Authorize called with:", { email });
 
         if (!email || !password) {
-          if (process.env.NODE_ENV === 'development') {}
+          console.log("[auth] Missing email or password");
           return null;
         }
 
@@ -32,20 +32,20 @@ export const authOptions: NextAuthConfig = {
         });
 
         if (!user) {
-          if (process.env.NODE_ENV === 'development') {}
+          console.log("[auth] User not found:", email);
           return null;
         }
 
         if (!user.password) {
-          if (process.env.NODE_ENV === 'development') {}
+          console.log("[auth] User has no password — maybe OAuth-only account");
           return null;
         }
 
         const isValid = await bcrypt.compare(password, user.password);
-        if (process.env.NODE_ENV === 'development') {}
+        console.log("[auth] Password match:", isValid);
 
         if (!isValid) {
-          if (process.env.NODE_ENV === 'development') {}
+          console.log("[auth] Password mismatch");
           return null;
         }
 
@@ -56,7 +56,7 @@ export const authOptions: NextAuthConfig = {
           image: user.image ?? undefined,
         };
 
-        if (process.env.NODE_ENV === 'development') {}
+        console.log("[auth] Returning safe user for session:", safeUser);
 
         return safeUser;
       },
@@ -74,7 +74,7 @@ export const authOptions: NextAuthConfig = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      if (process.env.NODE_ENV === 'development') {}
+      console.log("SIGNIN CALLBACK", user, account);
       
       // For credentials provider, ensure user exists in database
       if (account?.provider === "credentials" && user?.email) {
@@ -83,7 +83,7 @@ export const authOptions: NextAuthConfig = {
         });
         
         if (!dbUser) {
-          if (process.env.NODE_ENV === 'development') {}
+          console.log("[auth] User not found in database during signIn");
           return false;
         }
         
@@ -95,7 +95,7 @@ export const authOptions: NextAuthConfig = {
     },
     async jwt({ token, user, trigger }) {
       try {
-        if (process.env.NODE_ENV === 'development') {}
+        console.log("🔐 JWT Callback - Start", { hasUser: !!user, tokenId: token.id });
         
         // When user signs in, add their info to the token
         if (user) {
@@ -128,7 +128,7 @@ export const authOptions: NextAuthConfig = {
                 token.lastOnboardingCheck = Date.now();
               }
             } catch (error) {
-              if (process.env.NODE_ENV === "development") { console.error("Error fetching user data during sign in:", error); }
+              console.error("Error fetching user data during sign in:", error);
               // Set safe defaults
               token.onboardingCompleted = false;
               token.lastOnboardingCheck = Date.now();
@@ -136,72 +136,33 @@ export const authOptions: NextAuthConfig = {
           }
         }
         
-        // Check onboarding status VERY conservatively in production
-        // Only check database when absolutely necessary
+        // Check onboarding status periodically (every 5 minutes) instead of every request
+        // This reduces database load and prevents auth failures from cold connections
         if (token.id) {
           const now = Date.now();
           const lastCheck = token.lastOnboardingCheck as number || 0;
-          const isProduction = process.env.NODE_ENV === 'production';
+          const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
           
-          // In production: only check DB every 2 hours or on explicit update
-          // In development: check every 5 minutes for faster testing
-          const checkInterval = isProduction ? (2 * 60 * 60 * 1000) : (5 * 60 * 1000);
-          
-          // MINIMAL database hits: only when manually triggered or onboarding incomplete AND long interval
-          const shouldRefresh = trigger === 'update' || 
-                               (!token.onboardingCompleted && (now - lastCheck) > checkInterval);
-                               
-          if (shouldRefresh) {
-              try {
-                // Add timeout to prevent hanging in Vercel serverless functions
-                const timeoutPromise = new Promise((_, reject) =>
-                  setTimeout(() => reject(new Error('Database query timeout')), 8000)
-                );
-                
-                // Fetch both preferences and updated profile data with timeout
-                const [userPreferences, userData] = await Promise.race([
-                  Promise.all([
-                    prisma.userPreferences.findUnique({
-                      where: { userId: token.id as string },
-                    }),
-                    prisma.user.findUnique({
-                      where: { id: token.id as string },
-                      select: {
-                        firstName: true,
-                        lastName: true,
-                        image: true,
-                        name: true,
-                      },
-                    })
-                  ]),
-                  timeoutPromise
-                ]) as [
-                  { userId: string } | null, // userPreferences
-                  { firstName: string | null; lastName: string | null; image: string | null; name: string | null } | null // userData
-                ];
-                
-                const wasCompleted = token.onboardingCompleted;
-                token.onboardingCompleted = !!userPreferences;
-                token.lastOnboardingCheck = now;
-                
-                // Update profile data if available
-                if (userData) {
-                  token.firstName = userData.firstName;
-                  token.lastName = userData.lastName;
-                  token.image = userData.image;
-                  token.name = userData.name;
-                }
-                
-                if (!wasCompleted && token.onboardingCompleted) {
-                  // User just completed onboarding - could trigger refresh if needed
-                }
-            } catch (error) {
-              if (process.env.NODE_ENV === "development") { 
-                console.error("❌ Error checking user preferences and profile data in JWT:", error); 
+          // Only check if it's been more than 5 minutes since last check
+          // OR if onboarding is not yet completed (check more frequently for completion)
+          if (!token.onboardingCompleted || (now - lastCheck) > fiveMinutes) {
+            try {
+              console.log("🔐 Checking onboarding status for user:", token.id);
+              const userPreferences = await prisma.userPreferences.findUnique({
+                where: { userId: token.id as string },
+              });
+              
+              const wasCompleted = token.onboardingCompleted;
+              token.onboardingCompleted = !!userPreferences;
+              token.lastOnboardingCheck = now;
+              
+              if (!wasCompleted && token.onboardingCompleted) {
+                console.log("🎉 Onboarding completed detected for user:", token.id);
               }
-              // Don't break the session, keep existing values and extend delay
-              // This prevents auth failures from cascading in production
-              token.lastOnboardingCheck = Date.now() + (10 * 60 * 1000); // Delay 10 minutes
+            } catch (error) {
+              console.error("❌ Error checking user preferences in JWT:", error);
+              // Don't break the session, keep existing value and delay next check
+              token.lastOnboardingCheck = now;
               // If this is a fresh token without onboarding status, assume not completed
               if (token.onboardingCompleted === undefined) {
                 token.onboardingCompleted = false;
@@ -212,7 +173,7 @@ export const authOptions: NextAuthConfig = {
         
         return token;
       } catch (error) {
-        if (process.env.NODE_ENV === "development") { console.error("Error in JWT callback:", error); }
+        console.error("Error in JWT callback:", error);
         // Return token as-is to prevent session from breaking
         return token;
       }
@@ -229,9 +190,10 @@ export const authOptions: NextAuthConfig = {
           session.user.email = token.email ?? session.user.email;
         }
         
+        console.log("[auth] Session callback result:", session);
         return session;
       } catch (error) {
-        if (process.env.NODE_ENV === "development") { console.error("Error in session callback:", error); }
+        console.error("Error in session callback:", error);
         // Return session as-is to prevent breaking
         return session;
       }
