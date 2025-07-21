@@ -17,6 +17,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Fix Windows permission issues during build
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Avoid scanning Windows system directories
+      config.resolve.symlinks = false;
+    }
+    return config;
+  },
   // Configuration options can be added here as needed
 };
 
