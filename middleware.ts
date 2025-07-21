@@ -11,6 +11,9 @@ export async function middleware(request: NextRequest) {
   const isAuthenticated = !!token;
   const pathname = request.nextUrl.pathname;
   
+  // ADD DEBUGGING
+  console.log(`[MIDDLEWARE] ${pathname} - Auth: ${isAuthenticated}, Token: ${!!token}, UserId: ${token?.id}`);
+  
   // Define route types
   const publicRoutes = ["/login", "/sign-up"];
   const onboardingRoute = "/track-selection";
@@ -20,14 +23,18 @@ export async function middleware(request: NextRequest) {
   const isOnboardingRoute = pathname.startsWith(onboardingRoute);
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
+  console.log(`[MIDDLEWARE] Route types - Public: ${isPublicRoute}, Onboarding: ${isOnboardingRoute}, Protected: ${isProtectedRoute}`);
+
   // Middleware triggered on: pathname
   // User is authenticated: isAuthenticated
 
   // Handle unauthenticated users
   if (!isAuthenticated) {
     if (isPublicRoute) {
+      console.log(`[MIDDLEWARE] Allowing unauthenticated access to public route: ${pathname}`);
       return NextResponse.next();
     }
+    console.log(`[MIDDLEWARE] Redirecting unauthenticated user from ${pathname} to /login`);
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
@@ -78,9 +85,13 @@ export async function middleware(request: NextRequest) {
 // Apply middleware to protected routes
 export const config = {
   matcher: [
+    "/dashboard",
     "/dashboard/:path*", 
+    "/roadmap",
     "/roadmap/:path*", 
+    "/settings",
     "/settings/:path*", 
+    "/track-selection",
     "/track-selection/:path*",
     "/login",
     "/sign-up"
