@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast"; // Changed from react-toastify to react-hot-toast
 
 interface Track {
   id: number;
