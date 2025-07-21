@@ -7,17 +7,40 @@ export async function middleware(request: NextRequest) {
   console.log(`[MIDDLEWARE-DEBUG] AUTH_SECRET exists: ${!!process.env.AUTH_SECRET}`);
   console.log(`[MIDDLEWARE-DEBUG] Cookies: ${request.headers.get('cookie')?.substring(0, 100)}...`);
   
+  // Try different token configurations
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
+    cookieName: "next-auth.session-token", // Try explicit cookie name
   });
+  
+  // If that doesn't work, try with secureCookie option
+  const tokenSecure = !token ? await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+    secureCookie: true, // For HTTPS environments like Vercel
+  }) : null;
+  
+  // If still no token, try with different cookie name
+  const tokenVercel = !token && !tokenSecure ? await getToken({
+    req: request,
+    secret: process.env.AUTH_SECRET,
+    cookieName: "_vercel_jwt", // Try the cookie we see in logs
+  }) : null;
 
-  const isAuthenticated = !!token;
+  const finalToken = token || tokenSecure || tokenVercel;
+  const isAuthenticated = !!finalToken;
   const pathname = request.nextUrl.pathname;
   
   // ADD DEBUGGING
-  console.log(`[MIDDLEWARE] ${pathname} - Auth: ${isAuthenticated}, Token: ${!!token}, UserId: ${token?.id}`);
-  console.log(`[MIDDLEWARE-DEBUG] Full token:`, token);
+  console.log(`[MIDDLEWARE] ${pathname} - Auth: ${isAuthenticated}, Token: ${!!finalToken}, UserId: ${finalToken?.id}`);
+  console.log(`[MIDDLEWARE-DEBUG] Token attempts:`, { 
+    standard: !!token, 
+    secure: !!tokenSecure, 
+    vercel: !!tokenVercel,
+    final: !!finalToken 
+  });
+  console.log(`[MIDDLEWARE-DEBUG] Full token:`, finalToken);
   
   // Define route types
   const publicRoutes = ["/login", "/sign-up"];
@@ -44,10 +67,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Handle authenticated users
-  if (isAuthenticated && token?.id) {
+  if (isAuthenticated && finalToken?.id) {
     // TEMPORARILY DISABLE ONBOARDING CHECK FOR TESTING
     const hasCompletedOnboarding = true; // Force to true for testing
-    // const hasCompletedOnboarding = token.onboardingCompleted === true;
+    // const hasCompletedOnboarding = finalToken.onboardingCompleted === true;
 
     // If onboarding is completed
     if (hasCompletedOnboarding) {
