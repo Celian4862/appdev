@@ -199,7 +199,7 @@ export default function PlaygroundPage() {
           </div>
 
           {/* Terminal Output */}
-          <div className={`${showTerminal ? "flex" : "hidden"} md:flex flex-1 flex-col bg-zinc-950 p-4 font-mono text-sm border-t md:border-t-0 md:border-l border-white/20`}>
+          <div className={"flex md:flex flex-1 flex-col bg-zinc-950 p-4 font-mono text-sm border-t md:border-t-0 md:border-l border-white/20"}>
             <div className="mb-2 font-semibold">Output:</div>
             <textarea
               readOnly
