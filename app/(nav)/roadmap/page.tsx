@@ -48,58 +48,6 @@ export default function RoadmapPage() {
   const [hasPreferences, setHasPreferences] = useState(true);
   const [updatingActivity, setUpdatingActivity] = useState<string | null>(null);
 
-  const updateActivityProgress = useCallback(async (activityId: string, completed: boolean) => {
-    try {
-      setUpdatingActivity(activityId);
-      
-      const response = await fetch("/api/activity-progress", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ activityId, completed }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update activity progress");
-      }
-
-      const { overallProgress, phaseProgress } = await response.json();
-      
-      // Update the roadmap state with new progress
-      setRoadmap(prevRoadmap => {
-        if (!prevRoadmap) return null;
-        
-        return {
-          ...prevRoadmap,
-          progress: overallProgress,
-          phases: prevRoadmap.phases?.map(phase => {
-            const updatedActivities = phase.activities?.map(activity => 
-              activity.id === activityId 
-                ? { ...activity, completed, completedAt: completed ? new Date().toISOString() : undefined }
-                : activity
-            );
-            
-            // Find if this phase contains the updated activity
-            const hasUpdatedActivity = phase.activities?.some(activity => activity.id === activityId);
-            
-            return hasUpdatedActivity 
-              ? { ...phase, activities: updatedActivities, progress: phaseProgress }
-              : phase;
-          }) || []
-        };
-      });
-
-      toast.success(completed ? "Activity marked as complete!" : "Activity marked as incomplete");
-      
-    } catch (error) {
-      console.error("Error updating activity:", error);
-      toast.error("Failed to update activity progress");
-    } finally {
-      setUpdatingActivity(null);
-    }
-  }, []);
-
   const generateNewRoadmap = useCallback(async () => {
     try {
       setGenerating(true);
