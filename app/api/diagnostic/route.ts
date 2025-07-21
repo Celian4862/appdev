@@ -20,7 +20,12 @@ export async function GET(request: NextRequest) {
     };
 
     // 2. Test JWT token (middleware method)
-    let jwtResult: { success: boolean; error: string | null; data: any; timing: number } = { 
+    let jwtResult: { 
+      success: boolean; 
+      error: string | null; 
+      data: { userId: unknown; email: string | null | undefined; onboardingCompleted: unknown } | null; 
+      timing: number 
+    } = { 
       success: false, 
       error: null, 
       data: null, 
@@ -52,7 +57,12 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Test server auth (dashboard method)
-    let authResult: { success: boolean; error: string | null; data: any; timing: number } = { 
+    let authResult: { 
+      success: boolean; 
+      error: string | null; 
+      data: { userId: string | undefined; email: string | undefined } | null; 
+      timing: number 
+    } = { 
       success: false, 
       error: null, 
       data: null, 

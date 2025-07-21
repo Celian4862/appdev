@@ -93,7 +93,7 @@ export const authOptions: NextAuthConfig = {
       
       return true;
     },
-    async jwt({ token, user, trigger }) {
+    async jwt({ token, user }) {
       try {
         console.log("🔐 JWT Callback - Start", { hasUser: !!user, tokenId: token.id });
         

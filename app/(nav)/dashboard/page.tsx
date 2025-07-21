@@ -4,7 +4,6 @@ export const runtime = "nodejs";
 import { auth } from "@/lib/auth"; // ✅ now a proper function
 import { redirect } from "next/navigation";
 import DashboardClient from "./DashboardClient";
-import type { Session } from "next-auth";
 
 export default async function DashboardPage() {
   const session = await auth();
