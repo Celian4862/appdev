@@ -11,10 +11,8 @@ interface Props {
 export function SessionProvider({ children, basePath }: Props) {
   return (
     <NextAuthSessionProvider 
-      basePath={basePath}
-      refetchInterval={30} // Refetch session every 30 seconds
-      refetchOnWindowFocus={true} // Refetch when window gains focus
-      refetchWhenOffline={false} // Don't refetch when offline
+      refetchInterval={0} // Disable automatic refetching temporarily
+      refetchOnWindowFocus={false} // Disable window focus refetching
     >
       {children}
     </NextAuthSessionProvider>
