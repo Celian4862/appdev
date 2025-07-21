@@ -98,67 +98,47 @@ export const authOptions: NextAuthConfig = {
         console.log("🔐 JWT Callback - Start", { hasUser: !!user, tokenId: token.id });
         
         // When user signs in, add their info to the token
-        if (user) {
+        if (user && user.email) {
+          console.log("🔐 New user login, setting up token for:", user.email);
           token.id = user.id;
           token.email = user.email;
           token.name = user.name;
           
-          // Fetch additional user data from database including onboarding status
-          if (user.email) {
-            try {
-              // Add timeout for Vercel serverless environment
-              const dbTimeout = new Promise<null>((_, reject) => 
-                setTimeout(() => reject(new Error('Database timeout after 3 seconds')), 3000)
-              );
-              
-              const dbQuery = prisma.user.findUnique({
-                where: { email: user.email },
-                select: {
-                  id: true,
-                  email: true,
-                  name: true,
-                  firstName: true,
-                  lastName: true,
-                  image: true,
-                  UserPreferences: true, // Include preferences to check onboarding
-                },
-              });
-              
-              const dbUser = await Promise.race([dbQuery, dbTimeout]);
-              
-              if (dbUser) {
-                token.id = dbUser.id;
-                token.firstName = dbUser.firstName;
-                token.lastName = dbUser.lastName;
-                token.image = dbUser.image;
-                token.onboardingCompleted = !!dbUser.UserPreferences; // Check if user has preferences
-                token.lastOnboardingCheck = Date.now();
-              }
-            } catch (error) {
-              console.error("Error fetching user data during sign in:", error);
-              // Set safe defaults
-              token.onboardingCompleted = false;
-              token.lastOnboardingCheck = Date.now();
-            }
+          // For new sign-ins, check onboarding status with timeout protection
+          try {
+            const dbTimeout = new Promise<null>((_, reject) => 
+              setTimeout(() => reject(new Error('Database timeout')), 2000)
+            );
+            
+            const dbQuery = prisma.userPreferences.findUnique({
+              where: { userId: user.id },
+            });
+            
+            const userPreferences = await Promise.race([dbQuery, dbTimeout]);
+            token.onboardingCompleted = !!userPreferences;
+            token.lastOnboardingCheck = Date.now();
+            
+            console.log("🔐 Initial onboarding status set:", token.onboardingCompleted);
+          } catch (error) {
+            console.error("Error checking initial onboarding status:", error);
+            // Default to false - user can complete onboarding if needed
+            token.onboardingCompleted = false;
+            token.lastOnboardingCheck = Date.now();
           }
-        }
-        
-        // Check onboarding status periodically (every 5 minutes) instead of every request
-        // This reduces database load and prevents auth failures from cold connections
-        if (token.id) {
+        } 
+        // For existing tokens, only check onboarding periodically
+        else if (token.id) {
           const now = Date.now();
           const lastCheck = token.lastOnboardingCheck as number || 0;
-          const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+          const tenMinutes = 10 * 60 * 1000; // Check every 10 minutes instead of 5
           
-          // Only check if it's been more than 5 minutes since last check
-          // OR if onboarding is not yet completed (check more frequently for completion)
-          if (!token.onboardingCompleted || (now - lastCheck) > fiveMinutes) {
+          // Only check if onboarding is incomplete OR it's been a while
+          if (!token.onboardingCompleted || (now - lastCheck) > tenMinutes) {
             try {
-              console.log("🔐 Checking onboarding status for user:", token.id);
+              console.log("🔐 Periodic onboarding check for user:", token.id);
               
-              // Add timeout for Vercel serverless environment
               const dbTimeout = new Promise<null>((_, reject) => 
-                setTimeout(() => reject(new Error('Database timeout after 3 seconds')), 3000)
+                setTimeout(() => reject(new Error('Database timeout')), 2000)
               );
               
               const dbQuery = prisma.userPreferences.findUnique({
@@ -166,7 +146,6 @@ export const authOptions: NextAuthConfig = {
               });
               
               const userPreferences = await Promise.race([dbQuery, dbTimeout]);
-              
               const wasCompleted = token.onboardingCompleted;
               token.onboardingCompleted = !!userPreferences;
               token.lastOnboardingCheck = now;
@@ -175,21 +154,21 @@ export const authOptions: NextAuthConfig = {
                 console.log("🎉 Onboarding completed detected for user:", token.id);
               }
             } catch (error) {
-              console.error("❌ Error checking user preferences in JWT:", error);
-              // Don't break the session, keep existing value and delay next check
+              console.error("Error in periodic onboarding check:", error);
+              // Keep existing status on error
               token.lastOnboardingCheck = now;
-              // If this is a fresh token without onboarding status, assume not completed
-              if (token.onboardingCompleted === undefined) {
-                token.onboardingCompleted = false;
-              }
             }
           }
         }
-        
+
+        console.log("🔐 JWT Callback - Complete", { 
+          tokenId: token.id, 
+          onboarding: token.onboardingCompleted 
+        });
         return token;
       } catch (error) {
-        console.error("Error in JWT callback:", error);
-        // Return token as-is to prevent session from breaking
+        console.error("❌ JWT Callback Fatal Error:", error);
+        // Return token as-is to prevent total auth failure
         return token;
       }
     },
