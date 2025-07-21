@@ -106,7 +106,12 @@ export const authOptions: NextAuthConfig = {
           // Fetch additional user data from database including onboarding status
           if (user.email) {
             try {
-              const dbUser = await prisma.user.findUnique({
+              // Add timeout for Vercel serverless environment
+              const dbTimeout = new Promise<null>((_, reject) => 
+                setTimeout(() => reject(new Error('Database timeout after 3 seconds')), 3000)
+              );
+              
+              const dbQuery = prisma.user.findUnique({
                 where: { email: user.email },
                 select: {
                   id: true,
@@ -118,6 +123,8 @@ export const authOptions: NextAuthConfig = {
                   UserPreferences: true, // Include preferences to check onboarding
                 },
               });
+              
+              const dbUser = await Promise.race([dbQuery, dbTimeout]);
               
               if (dbUser) {
                 token.id = dbUser.id;
@@ -148,9 +155,17 @@ export const authOptions: NextAuthConfig = {
           if (!token.onboardingCompleted || (now - lastCheck) > fiveMinutes) {
             try {
               console.log("🔐 Checking onboarding status for user:", token.id);
-              const userPreferences = await prisma.userPreferences.findUnique({
+              
+              // Add timeout for Vercel serverless environment
+              const dbTimeout = new Promise<null>((_, reject) => 
+                setTimeout(() => reject(new Error('Database timeout after 3 seconds')), 3000)
+              );
+              
+              const dbQuery = prisma.userPreferences.findUnique({
                 where: { userId: token.id as string },
               });
+              
+              const userPreferences = await Promise.race([dbQuery, dbTimeout]);
               
               const wasCompleted = token.onboardingCompleted;
               token.onboardingCompleted = !!userPreferences;
