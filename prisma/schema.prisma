@@ -61,6 +61,8 @@ model User {
   firstName     String?
   lastName      String?
   password      String?
+  resetToken    String?
+  resetTokenExpiry DateTime?
   Account       Account[]
   Authenticator Authenticator[]
   Session       Session[]

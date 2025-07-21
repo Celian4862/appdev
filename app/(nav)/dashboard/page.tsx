@@ -7,10 +7,8 @@ import DashboardClient from "./DashboardClient";
 
 export default async function DashboardPage() {
   const session = await auth();
-  console.log("[dashboard] session:", session);
 
   if (!session?.user) {
-    console.log("[dashboard] No user in session");
     redirect("/login");
   }
 

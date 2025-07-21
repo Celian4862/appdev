@@ -93,9 +93,11 @@ export const authOptions: NextAuthConfig = {
       
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       try {
-        console.log("🔄 JWT Callback - Start", { hasUser: !!user, tokenId: token.id });
+        if (process.env.NODE_ENV === 'development') {
+          console.log("🔄 JWT Callback - Start", { hasUser: !!user, tokenId: token.id, trigger });
+        }
         
         // When user signs in, add their info to the token
         if (user) {
@@ -136,30 +138,60 @@ export const authOptions: NextAuthConfig = {
           }
         }
         
-        // Check onboarding status periodically (every 5 minutes) instead of every request
+        // Check onboarding status and profile data periodically (every 5 minutes) OR when manually updated
         // This reduces database load and prevents auth failures from cold connections
         if (token.id) {
           const now = Date.now();
           const lastCheck = token.lastOnboardingCheck as number || 0;
           const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
           
-          // Only check if it's been more than 5 minutes since last check
-          // OR if onboarding is not yet completed (check more frequently for completion)
-          if (!token.onboardingCompleted || (now - lastCheck) > fiveMinutes) {
+          // Force refresh on manual update trigger or periodic check
+          const shouldRefresh = trigger === 'update' || 
+                               !token.onboardingCompleted || 
+                               (now - lastCheck) > fiveMinutes;
+          
+          if (shouldRefresh) {
             try {
-              console.log("🔄 Checking onboarding status for user:", token.id);
-              const userPreferences = await prisma.userPreferences.findUnique({
-                where: { userId: token.id as string },
-              });
+              console.log("🔄 Refreshing profile data for user:", token.id, "trigger:", trigger);
+              
+              // Fetch both preferences and updated profile data
+              const [userPreferences, userData] = await Promise.all([
+                prisma.userPreferences.findUnique({
+                  where: { userId: token.id as string },
+                }),
+                prisma.user.findUnique({
+                  where: { id: token.id as string },
+                  select: {
+                    firstName: true,
+                    lastName: true,
+                    image: true,
+                    name: true,
+                  },
+                })
+              ]);
+              
               const wasCompleted = token.onboardingCompleted;
               token.onboardingCompleted = !!userPreferences;
               token.lastOnboardingCheck = now;
+              
+              // Update profile data if available
+              if (userData) {
+                token.firstName = userData.firstName;
+                token.lastName = userData.lastName;
+                token.image = userData.image;
+                token.name = userData.name;
+                console.log("🔄 Updated profile data in token:", {
+                  firstName: userData.firstName,
+                  lastName: userData.lastName,
+                  hasImage: !!userData.image
+                });
+              }
               
               if (!wasCompleted && token.onboardingCompleted) {
                 console.log("🎉 Onboarding completed detected for user:", token.id);
               }
             } catch (error) {
-              console.error("❌ Error checking user preferences in JWT:", error);
+              console.error("❌ Error checking user preferences and profile data in JWT:", error);
               // Don't break the session, keep existing value and delay next check
               token.lastOnboardingCheck = now;
               // If this is a fresh token without onboarding status, assume not completed

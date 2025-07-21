@@ -48,6 +48,11 @@ next-env.d.ts
 middleware.disabled.ts
 *.disabled.*
 
+# uploaded files
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/*/.gitkeep
+
 # local development scripts and files
 /scripts/
 /app/test-api/
