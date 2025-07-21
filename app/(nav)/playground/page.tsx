@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 type Language = "c" | "java" | "python";
 
@@ -14,7 +14,6 @@ export default function PlaygroundPage() {
   const [language, setLanguage] = useState<Language>("c");
   const [pendingLanguage, setPendingLanguage] = useState<Language | null>(null);
   const [showConfirmSwitchModal, setShowConfirmSwitchModal] = useState(false);
-  const [showTerminal, setShowTerminal] = useState(false);
   const [files, setFiles] = useState<FileTab[]>([
     { name: "main.c", language: "c", content: "" },
   ]);
