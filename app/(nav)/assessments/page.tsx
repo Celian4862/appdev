@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import OnlineCompiler from "@/app/components/online-compiler";
 import ChatBox from "@/app/components/ChatBox";
 
-export default function AssessmentPage() {
+function AssessmentContent() {
   const searchParams = useSearchParams();
   const [chatOpen, setChatOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -256,5 +256,24 @@ export default function AssessmentPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="w-full min-h-screen bg-black pt-12 px-8 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+        <p className="text-white text-lg">Loading assessment...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function AssessmentPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <AssessmentContent />
+    </Suspense>
   );
 }
