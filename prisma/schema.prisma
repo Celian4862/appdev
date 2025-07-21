@@ -178,6 +178,7 @@ model ActivityProgress {
   phaseId     String
   activityIndex Int
   name        String
+  description String?
   type        String // project, reading, exercise, quiz
   estimatedHours Int
   completed   Boolean @default(false)

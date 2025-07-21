@@ -197,6 +197,75 @@ export default function RoadmapPage() {
     }
   }, [generateNewRoadmap]);
 
+  const toggleActivityCompletion = useCallback(async (activityId: string, currentCompleted: boolean) => {
+    if (!activityId) {
+      toast.error("Activity ID not found");
+      return;
+    }
+
+    try {
+      setUpdatingActivity(activityId);
+      
+      const response = await fetch("/api/activities", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          activityId,
+          completed: !currentCompleted,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update activity");
+      }
+
+      const data = await response.json();
+
+      // Update the roadmap state with new completion status and progress
+      setRoadmap(prevRoadmap => {
+        if (!prevRoadmap) return null;
+
+        const updatedRoadmap = { ...prevRoadmap };
+        updatedRoadmap.progress = data.overallProgress;
+
+        // Find and update the activity
+        updatedRoadmap.phases = prevRoadmap.phases.map(phase => {
+          const updatedPhase = { ...phase };
+          updatedPhase.activities = phase.activities.map(activity => {
+            if (activity.id === activityId) {
+              return {
+                ...activity,
+                completed: data.activity.completed,
+                completedAt: data.activity.completedAt,
+              };
+            }
+            return activity;
+          });
+
+          // Update phase progress
+          const completedActivities = updatedPhase.activities.filter(a => a.completed).length;
+          updatedPhase.progress = (completedActivities / updatedPhase.activities.length) * 100;
+
+          return updatedPhase;
+        });
+
+        return updatedRoadmap;
+      });
+
+      toast.success(
+        !currentCompleted ? "Activity marked as completed!" : "Activity marked as incomplete"
+      );
+
+    } catch (error) {
+      console.error("Error updating activity:", error);
+      toast.error("Failed to update activity");
+    } finally {
+      setUpdatingActivity(null);
+    }
+  }, []);
+
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
       loadOrGenerateRoadmap();
@@ -453,7 +522,7 @@ export default function RoadmapPage() {
                           ? 'bg-green-600/20 border border-green-500/50' 
                           : 'bg-white/10 hover:bg-white/15'
                       } ${updatingActivity === activity.id ? 'opacity-50' : ''}`}
-                      onClick={() => activity.id && updateActivityProgress(activity.id, !activity.completed)}
+                      onClick={() => activity.id && toggleActivityCompletion(activity.id, activity.completed || false)}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`text-xs px-2 py-1 rounded uppercase ${
@@ -475,6 +544,20 @@ export default function RoadmapPage() {
                       </div>
                       <div className="font-medium text-white">{activity.name}</div>
                       <p className="text-sm text-white/80 mt-1">{activity.description}</p>
+                      
+                      {/* Special handling for quiz activities */}
+                      {activity.type === 'quiz' && (
+                        <div className="mt-3">
+                          <a
+                            href="/assessments"
+                            className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            📝 Take Quiz
+                          </a>
+                        </div>
+                      )}
+                      
                       {activity.completedAt && (
                         <p className="text-xs text-green-400/80 mt-1">
                           Completed on {new Date(activity.completedAt).toLocaleDateString()}

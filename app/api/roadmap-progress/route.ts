@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
             phaseId: savedPhase.id,
             activityIndex: j,
             name: activity.name,
+            description: activity.description,
             type: activity.type,
             estimatedHours: activity.estimatedHours,
           },
@@ -123,19 +124,25 @@ export async function GET() {
       estimatedDays: roadmap.totalDays,
       totalActivities: roadmap.totalActivities,
       trackName: roadmap.trackName,
+      userTopics: [], // TODO: Fetch from user preferences
+      confidenceLevel: 3.5, // TODO: Calculate from user preferences
       progress: roadmap.overallProgress,
       phases: roadmap.phases.map(phase => ({
         name: phase.name,
         description: phase.description,
+        objectives: [], // TODO: Store in database or generate
+        topics: [], // TODO: Store in database or generate
         estimatedDays: phase.estimatedDays,
+        prerequisites: [], // TODO: Store in database or generate
         progress: phase.progress,
         activities: phase.activities.map(activity => ({
           id: activity.id,
           name: activity.name,
+          description: activity.description || `${activity.type} activity`,
           type: activity.type,
           estimatedHours: activity.estimatedHours,
           completed: activity.completed,
-          completedAt: activity.completedAt,
+          completedAt: activity.completedAt?.toISOString(),
         })),
       })),
     };

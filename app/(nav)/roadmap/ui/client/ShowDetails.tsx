@@ -4,10 +4,13 @@ import Image from "next/image";
 import { useState } from "react";
 
 interface Activity {
+  id?: string;
   name: string;
   description: string;
   type: "project" | "reading" | "exercise" | "quiz";
   estimatedHours: number;
+  completed?: boolean;
+  completedAt?: string;
 }
 
 interface ShowDetailsProps {
@@ -78,7 +81,21 @@ export default function ShowDetails({ index, activities = [] }: ShowDetailsProps
                     <span className="text-xs text-white/60">
                       {activity.estimatedHours}h
                     </span>
+                    {activity.completed && (
+                      <span className="text-xs text-green-400">✓ Completed</span>
+                    )}
                   </div>
+                  {/* Quiz navigation */}
+                  {activity.type === 'quiz' && (
+                    <div className="mt-2">
+                      <Link
+                        href="/assessments"
+                        className="inline-flex items-center px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition"
+                      >
+                        📝 Take Quiz
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             ))
