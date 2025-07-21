@@ -20,10 +20,14 @@ export const authOptions: NextAuthConfig = {
         const email = credentials?.email as string;
         const password = credentials?.password as string;
 
-        console.log("[auth] Authorize called with:", { email });
+        if (process.env.NODE_ENV === 'development') {
+          console.log("[auth] Authorize called with:", { email });
+        }
 
         if (!email || !password) {
-          console.log("[auth] Missing email or password");
+          if (process.env.NODE_ENV === 'development') {
+            console.log("[auth] Missing email or password");
+          }
           return null;
         }
 
@@ -32,20 +36,28 @@ export const authOptions: NextAuthConfig = {
         });
 
         if (!user) {
-          console.log("[auth] User not found:", email);
+          if (process.env.NODE_ENV === 'development') {
+            console.log("[auth] User not found:", email);
+          }
           return null;
         }
 
         if (!user.password) {
-          console.log("[auth] User has no password — maybe OAuth-only account");
+          if (process.env.NODE_ENV === 'development') {
+            console.log("[auth] User has no password — maybe OAuth-only account");
+          }
           return null;
         }
 
         const isValid = await bcrypt.compare(password, user.password);
-        console.log("[auth] Password match:", isValid);
+        if (process.env.NODE_ENV === 'development') {
+          console.log("[auth] Password match:", isValid);
+        }
 
         if (!isValid) {
-          console.log("[auth] Password mismatch");
+          if (process.env.NODE_ENV === 'development') {
+            console.log("[auth] Password mismatch");
+          }
           return null;
         }
 
@@ -56,7 +68,9 @@ export const authOptions: NextAuthConfig = {
           image: user.image ?? undefined,
         };
 
-        console.log("[auth] Returning safe user for session:", safeUser);
+        if (process.env.NODE_ENV === 'development') {
+          console.log("[auth] Returning safe user for session:", safeUser);
+        }
 
         return safeUser;
       },
@@ -74,7 +88,9 @@ export const authOptions: NextAuthConfig = {
   },
   callbacks: {
     async signIn({ user, account }) {
-      console.log("SIGNIN CALLBACK", user, account);
+      if (process.env.NODE_ENV === 'development') {
+        console.log("SIGNIN CALLBACK", user, account);
+      }
       
       // For credentials provider, ensure user exists in database
       if (account?.provider === "credentials" && user?.email) {
@@ -83,7 +99,9 @@ export const authOptions: NextAuthConfig = {
         });
         
         if (!dbUser) {
-          console.log("[auth] User not found in database during signIn");
+          if (process.env.NODE_ENV === 'development') {
+            console.log("[auth] User not found in database during signIn");
+          }
           return false;
         }
         
