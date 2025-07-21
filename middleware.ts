@@ -7,9 +7,14 @@ export async function middleware(request: NextRequest) {
     req: request,
     secret: process.env.AUTH_SECRET,
     secureCookie: true, // Use secureCookie for HTTPS environments like Vercel
+    // Add these for better consistency
+    salt: "authjs.session-token",
+    cookieName: process.env.NODE_ENV === "production" 
+      ? "__Secure-authjs.session-token" 
+      : "authjs.session-token"
   });
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!token?.id; // Changed to check token.id specifically
   const pathname = request.nextUrl.pathname;
   
   // Define route types
@@ -31,7 +36,6 @@ export async function middleware(request: NextRequest) {
 
   // Handle authenticated users
   if (isAuthenticated && token?.id) {
-    // Restore proper onboarding check
     const hasCompletedOnboarding = token.onboardingCompleted === true;
 
     // If onboarding is completed
