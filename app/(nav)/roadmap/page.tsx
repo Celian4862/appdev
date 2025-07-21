@@ -145,6 +145,16 @@ export default function RoadmapPage() {
     }
   }, [generateNewRoadmap]);
 
+  // Helper function to determine if a phase is unlocked
+  const isPhaseUnlocked = useCallback((phaseIndex: number, phases: Phase[]) => {
+    // First phase is always unlocked
+    if (phaseIndex === 0) return true;
+    
+    // Check if the previous phase is completed (100% progress)
+    const previousPhase = phases[phaseIndex - 1];
+    return previousPhase && (previousPhase.progress || 0) >= 100;
+  }, []);
+
   const toggleActivityCompletion = useCallback(async (activityId: string, currentCompleted: boolean) => {
     if (!activityId) {
       toast.error("Activity ID not found");
@@ -400,24 +410,46 @@ export default function RoadmapPage() {
             </div>
           </div>
 
-          {roadmap.phases?.map((phase, index) => (
+          {roadmap.phases?.map((phase, index) => {
+            const isUnlocked = isPhaseUnlocked(index, roadmap.phases);
+            
+            return (
             <div
               key={index}
-              className="relative mt-10 min-h-[300px] overflow-hidden rounded-lg border-2 border-white p-12 shadow-md"
+              className={`relative mt-10 min-h-[300px] overflow-hidden rounded-lg border-2 p-12 shadow-md transition-all ${
+                isUnlocked 
+                  ? 'border-white' 
+                  : 'border-gray-600 opacity-60 bg-gray-900/50'
+              }`}
             >
+              {/* Lock indicator for locked phases */}
+              {!isUnlocked && (
+                <div className="absolute top-4 right-4 z-10">
+                  <div className="flex items-center gap-2 bg-gray-800 text-gray-300 px-3 py-1 rounded-full border border-gray-600">
+                    <span className="text-sm">🔒</span>
+                    <span className="text-xs">Complete previous phase</span>
+                  </div>
+                </div>
+              )}
+              
               <div className="flex items-center gap-3 mb-6">
                 <Image
                   src={`/icons/phase${index + 1}_icon.png`}
                   alt="icon"
                   width={24}
                   height={24}
+                  className={!isUnlocked ? 'grayscale opacity-60' : ''}
                 />
-                <p className="text-xl text-white font-bold">{phase.name}</p>
+                <p className={`text-xl font-bold ${isUnlocked ? 'text-white' : 'text-gray-400'}`}>
+                  {phase.name}
+                </p>
                 <div className="flex-1"></div>
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-84 overflow-hidden rounded-full bg-white/30">
                     <div
-                      className="h-full rounded-full bg-blue-600 transition-all"
+                      className={`h-full rounded-full transition-all ${
+                        isUnlocked ? 'bg-blue-600' : 'bg-gray-600'
+                      }`}
                       style={{ width: `${phase.progress || 0}%` }}
                     ></div>
                   </div>
@@ -465,14 +497,24 @@ export default function RoadmapPage() {
                   {phase.activities?.map((activity, i) => (
                     <div 
                       key={i} 
-                      className={`p-4 rounded-lg transition-all cursor-pointer relative ${
-                        activity.completed 
-                          ? 'bg-green-600/20 border border-green-500/50' 
-                          : activity.type === 'quiz'
-                          ? 'bg-blue-600/10 border border-blue-500/30 hover:bg-blue-600/15'
-                          : 'bg-white/10 hover:bg-white/15'
+                      className={`p-4 rounded-lg transition-all relative ${
+                        !isUnlocked 
+                          ? 'bg-gray-800/30 border border-gray-600 cursor-not-allowed opacity-50'
+                          : `cursor-pointer ${
+                              activity.completed 
+                                ? 'bg-green-600/20 border border-green-500/50' 
+                                : activity.type === 'quiz'
+                                ? 'bg-blue-600/10 border border-blue-500/30 hover:bg-blue-600/15'
+                                : 'bg-white/10 hover:bg-white/15'
+                            }`
                       } ${updatingActivity === activity.id ? 'opacity-50' : ''}`}
-                      onClick={() => activity.id && toggleActivityCompletion(activity.id, activity.completed || false)}
+                      onClick={() => {
+                        if (isUnlocked && activity.id) {
+                          toggleActivityCompletion(activity.id, activity.completed || false);
+                        } else if (!isUnlocked) {
+                          toast.error("Complete the previous phase to unlock this activity");
+                        }
+                      }}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`text-xs px-2 py-1 rounded uppercase ${
@@ -498,26 +540,38 @@ export default function RoadmapPage() {
                       {/* Special handling for quiz activities */}
                       {activity.type === 'quiz' && (
                         <div className="mt-3">
-                          <a
-                            href={`/assessments?quiz=${encodeURIComponent(activity.name)}&id=${activity.id}&phase=${encodeURIComponent(phase.name)}`}
-                            className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            📝 Take Quiz
-                          </a>
+                          {isUnlocked ? (
+                            <a
+                              href={`/assessments?quiz=${encodeURIComponent(activity.name)}&id=${activity.id}&phase=${encodeURIComponent(phase.name)}`}
+                              className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              📝 Take Quiz
+                            </a>
+                          ) : (
+                            <div className="inline-flex items-center px-3 py-1 bg-gray-600 text-gray-300 text-xs rounded cursor-not-allowed">
+                              🔒 Quiz Locked
+                            </div>
+                          )}
                         </div>
                       )}
                       
                       {/* Special handling for exercise activities */}
                       {activity.type === 'exercise' && (
                         <div className="mt-3">
-                          <a
-                            href={`/assessments?code=${encodeURIComponent(activity.name)}&id=${activity.id}&phase=${encodeURIComponent(phase.name)}&type=exercise`}
-                            className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            💻 Code Exercise
-                          </a>
+                          {isUnlocked ? (
+                            <a
+                              href={`/assessments?code=${encodeURIComponent(activity.name)}&id=${activity.id}&phase=${encodeURIComponent(phase.name)}&type=exercise`}
+                              className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              💻 Code Exercise
+                            </a>
+                          ) : (
+                            <div className="inline-flex items-center px-3 py-1 bg-gray-600 text-gray-300 text-xs rounded cursor-not-allowed">
+                              🔒 Exercise Locked
+                            </div>
+                          )}
                         </div>
                       )}
                       
@@ -559,7 +613,8 @@ export default function RoadmapPage() {
               <hr className="my-8 border-t-3 border-white/40" />
               <ShowDetails index={index} activities={phase.activities} />
             </div>
-          ))}
+            );
+          })}
           
           <div className="mt-10 text-center">
             <button
