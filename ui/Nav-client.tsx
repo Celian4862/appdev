@@ -32,7 +32,29 @@ export default function Nav() {
       </Link>
 
       <div className="flex flex-wrap items-center gap-10">
-        <NavLink />
+        {!logged_in ? (
+          // Show public navigation when NOT authenticated
+          <>
+            <Link href="/" className="hover:opacity-80">
+              Home
+            </Link>
+            <Link href="/#features" className="hover:opacity-80">
+              Features
+            </Link>
+            <Link href="/#how-it-works" className="hover:opacity-80">
+              How It Works
+            </Link>
+            <Link href="/#faq" className="hover:opacity-80">
+              FAQ
+            </Link>
+            <Link href="/tracks" className="hover:opacity-80">
+              Tracks
+            </Link>
+          </>
+        ) : (
+          // Show authenticated navigation when logged in
+          <NavLink />
+        )}
       </div>
 
       {loading ? (
@@ -42,7 +64,10 @@ export default function Nav() {
         </div>
       ) : logged_in ? (
         <div className="flex items-center gap-4">
-          <Link href="/profile" className="transition-colors hover:opacity-80">
+          <Link
+            href="/profile"
+            className="transition-colors hover:opacity-80"
+          >
             <NavProfilePicture imageUrl={session?.user?.image} />
           </Link>
         </div>
