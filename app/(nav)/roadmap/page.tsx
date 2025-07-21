@@ -1,9 +1,12 @@
 import Image from "next/image";
 import ShowDetails from "./ui/client/ShowDetails";
+import { ClaimCert } from "./ui/client/ClaimCert";
+// import GenerateCertificate from "./ui/client/GenerateCertificate";
 
 export default function RoadmapPage() {
   // Replace with actual user data as needed
   const hasRoadmap = true;
+  const hasCompletedTrack = true;
 
   return (
     <main className="w-full bg-black p-32 px-8">
@@ -37,6 +40,10 @@ export default function RoadmapPage() {
                 <button className="mt-8 cursor-pointer rounded-lg border border-transparent bg-white px-12 py-3 text-lg font-semibold text-black transition duration-500 hover:border-1 hover:border-white hover:bg-black hover:text-white">
                   Continue learning
                 </button>
+                 {/* APPLY BACKEND LOGIC TO CLAIM IF THE TRACK IS FINISED */}
+                <ClaimCert hasCompletedTrack={hasCompletedTrack} />
+                   {/* TEST IF THE CERT WORKS*/}
+                {/* <GenerateCertificate/> */}
                 <div className="mt-6 flex flex-row items-center gap-3">
                   <div className="flex items-center gap-2">
                     <Image

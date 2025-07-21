@@ -66,6 +66,7 @@ export default function LoginPage() {
   );
 
   return (
+    <div>
     <AuthForm
       greet="Welcome back!"
       desc="Log in to your account to continue."
@@ -88,5 +89,7 @@ export default function LoginPage() {
         </Link>
       </div>
     </AuthForm>
+    </div>
+   
   );
 }
