@@ -3,44 +3,14 @@ import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
-  // Debug environment
-  console.log(`[MIDDLEWARE-DEBUG] AUTH_SECRET exists: ${!!process.env.AUTH_SECRET}`);
-  console.log(`[MIDDLEWARE-DEBUG] Cookies: ${request.headers.get('cookie')?.substring(0, 100)}...`);
-  
-  // Try different token configurations
   const token = await getToken({
     req: request,
     secret: process.env.AUTH_SECRET,
-    cookieName: "next-auth.session-token", // Try explicit cookie name
+    secureCookie: true, // Use secureCookie for HTTPS environments like Vercel
   });
-  
-  // If that doesn't work, try with secureCookie option
-  const tokenSecure = !token ? await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    secureCookie: true, // For HTTPS environments like Vercel
-  }) : null;
-  
-  // If still no token, try with different cookie name
-  const tokenVercel = !token && !tokenSecure ? await getToken({
-    req: request,
-    secret: process.env.AUTH_SECRET,
-    cookieName: "_vercel_jwt", // Try the cookie we see in logs
-  }) : null;
 
-  const finalToken = token || tokenSecure || tokenVercel;
-  const isAuthenticated = !!finalToken;
+  const isAuthenticated = !!token;
   const pathname = request.nextUrl.pathname;
-  
-  // ADD DEBUGGING
-  console.log(`[MIDDLEWARE] ${pathname} - Auth: ${isAuthenticated}, Token: ${!!finalToken}, UserId: ${finalToken?.id}`);
-  console.log(`[MIDDLEWARE-DEBUG] Token attempts:`, { 
-    standard: !!token, 
-    secure: !!tokenSecure, 
-    vercel: !!tokenVercel,
-    final: !!finalToken 
-  });
-  console.log(`[MIDDLEWARE-DEBUG] Full token:`, finalToken);
   
   // Define route types
   const publicRoutes = ["/login", "/sign-up"];
@@ -51,26 +21,18 @@ export async function middleware(request: NextRequest) {
   const isOnboardingRoute = pathname.startsWith(onboardingRoute);
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  console.log(`[MIDDLEWARE] Route types - Public: ${isPublicRoute}, Onboarding: ${isOnboardingRoute}, Protected: ${isProtectedRoute}`);
-
-  // Middleware triggered on: pathname
-  // User is authenticated: isAuthenticated
-
   // Handle unauthenticated users
   if (!isAuthenticated) {
     if (isPublicRoute) {
-      console.log(`[MIDDLEWARE] Allowing unauthenticated access to public route: ${pathname}`);
       return NextResponse.next();
     }
-    console.log(`[MIDDLEWARE] Redirecting unauthenticated user from ${pathname} to /login`);
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Handle authenticated users
-  if (isAuthenticated && finalToken?.id) {
-    // TEMPORARILY DISABLE ONBOARDING CHECK FOR TESTING
-    const hasCompletedOnboarding = true; // Force to true for testing
-    // const hasCompletedOnboarding = finalToken.onboardingCompleted === true;
+  if (isAuthenticated && token?.id) {
+    // Restore proper onboarding check
+    const hasCompletedOnboarding = token.onboardingCompleted === true;
 
     // If onboarding is completed
     if (hasCompletedOnboarding) {
