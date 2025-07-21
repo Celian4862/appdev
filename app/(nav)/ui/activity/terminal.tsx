@@ -22,7 +22,7 @@ export default function Terminal() {
         </button>
       </div>
       <textarea
-        className="h-52 resize-none border-t border-gray-700 bg-black p-4 font-mono text-sm text-white outline-none"
+        className="h-52 w-full resize-none border-t border-gray-700 bg-black p-4 font-mono text-sm text-white outline-none"
         value={code}
         onChange={(e) => setCode(e.target.value)}
         placeholder="// Write your code here"
