@@ -15,10 +15,12 @@ interface Topic {
   description: string | null;
 }
 
-export default function TrackFlow() {
+export default function TrackSelectionPage() {
   const [step, setStep] = useState(1);
+  // const [selectedTrack, setSelectedTrack] = useState<string | null>(null);
   const [selectedTrack, setSelectedTrack] = useState<number | null>(null);
   const [selectedTopics, setSelectedTopics] = useState<number[]>([]);
+
   const [confidence, setConfidence] = useState<number[]>(Array(10).fill(0));
   const [tracks, setTracks] = useState<Track[]>([]);
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -67,7 +69,7 @@ export default function TrackFlow() {
   };
 
   const handleNext = () => {
-    if (step === 1 && selectedTrack === null) {
+    if (step === 1 && !selectedTrack) {
       alert("Please select a track.");
       return;
     }
@@ -176,13 +178,15 @@ export default function TrackFlow() {
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-black via-blue-900 to-cyan-400 px-8 py-16 text-white">
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center gap-6">
+        {/* Step 1 - Track Selection */}
         {step === 1 && (
           <>
             <p className="text-3xl font-semibold">1/3</p>
             <h1 className="text-5xl font-bold">Choose your track.</h1>
             <p className="text-gray-300">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Pick the track you&apos;re focused on.
             </p>
+
             <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
               {tracks.map((track) => (
                 <button
@@ -206,6 +210,7 @@ export default function TrackFlow() {
           </>
         )}
 
+        {/* Step 2 - Topic Selection */}
         {step === 2 && (
           <>
             <p className="text-3xl font-semibold">2/3</p>
@@ -238,10 +243,11 @@ export default function TrackFlow() {
           </>
         )}
 
+        {/* Step 3 - Confidence Rating */}
         {step === 3 && (
           <>
             <p className="text-3xl font-semibold">3/3</p>
-            <h1 className="text-5xl font-bold">How confident are you in...</h1>
+            <h1 className="text-5xl font-bold">Rate your confidence</h1>
             <p className="text-gray-300">
               Please rate your confidence level for each area. All questions are required.
             </p>
@@ -257,19 +263,18 @@ export default function TrackFlow() {
                     <span className="text-sm">Not confident</span>
                     <div className="flex gap-4">
                       {[1, 2, 3, 4, 5].map((num) => (
-                        <label key={num} className="flex flex-col items-center">
-                          <button
-                            type="button"
-                            onClick={() => handleConfidenceChange(i, num)}
-                            className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-200 ${
-                              confidence[i] === num
-                                ? "scale-110 border-white bg-white text-black shadow-md"
-                                : "border-white bg-transparent text-white hover:scale-105"
-                            }`}
-                          >
-                            {num}
-                          </button>
-                        </label>
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => handleConfidenceChange(i, num)}
+                          className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-200 ${
+                            confidence[i] === num
+                              ? "scale-110 border-white bg-white text-black shadow-md"
+                              : "border-white bg-transparent text-white hover:scale-105"
+                          }`}
+                        >
+                          {num}
+                        </button>
                       ))}
                     </div>
                     <span className="text-sm">Very Confident</span>
@@ -281,6 +286,7 @@ export default function TrackFlow() {
         )}
       </div>
 
+      {/* Navigation buttons */}
       <div className="mt-12 flex justify-between">
         {step > 1 ? (
           <button

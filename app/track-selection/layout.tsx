@@ -1,4 +1,4 @@
-// app/(bare)/track-selection/layout.tsx
+// app/track-selection/layout.tsx
 export default function TrackSelectionLayout({
   children,
 }: {
