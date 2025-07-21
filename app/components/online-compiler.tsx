@@ -6,10 +6,18 @@ import dynamic from "next/dynamic";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), { ssr: false });
 
-export default function OnlineCompiler() {
+interface OnlineCompilerProps {
+  exerciseName?: string | null;
+}
+
+export default function OnlineCompiler({ exerciseName }: OnlineCompilerProps) {
   const [language, setLanguage] = useState("C");
   const [output, setOutput] = useState("// Output will appear here...");
-  const [code, setCode] = useState("// Write your code here...");
+  const [code, setCode] = useState(
+    exerciseName 
+      ? `// Exercise: ${exerciseName}\n// Write your solution here...\n\n` 
+      : "// Write your code here..."
+  );
 
   const handleRun = async () => {
     try {
@@ -48,7 +56,14 @@ export default function OnlineCompiler() {
     <div className="flex h-[80vh] w-full overflow-hidden rounded-md border border-gray-700 bg-black text-white">
       <div className="flex flex-col w-2/3 border-r border-gray-700">
         <div className="flex items-center justify-between px-4 py-2 border-b border-gray-700 bg-[#1e1e1e]">
-          <span className="text-sm font-bold">Code Editor</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold">Code Editor</span>
+            {exerciseName && (
+              <span className="text-xs bg-green-600 text-white px-2 py-1 rounded">
+                Exercise: {exerciseName}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleRun}

@@ -13,14 +13,25 @@ function AssessmentContent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerHeight, setContainerHeight] = useState("100vh");
 
-  // Get quiz information from URL parameters
+  // Get quiz/exercise information from URL parameters
   const quizName = searchParams.get('quiz');
+  const codeName = searchParams.get('code');
   const activityId = searchParams.get('id');
   const phaseName = searchParams.get('phase');
+  const activityType = searchParams.get('type');
 
-  // Function to mark quiz as completed
-  const completeQuiz = async () => {
+  // Auto-switch to Code tab for exercises
+  useEffect(() => {
+    if (activityType === 'exercise' && codeName) {
+      setActiveTab("Code");
+    }
+  }, [activityType, codeName]);
+
+  // Function to mark quiz/exercise as completed
+  const completeActivity = async () => {
     if (!activityId) return;
+    
+    const activityTypeText = activityType === 'exercise' ? 'exercise' : 'quiz';
     
     try {
       const response = await fetch("/api/activities", {
@@ -36,14 +47,14 @@ function AssessmentContent() {
 
       if (response.ok) {
         // Show success message and redirect
-        alert("Quiz completed successfully! Redirecting to roadmap...");
+        alert(`${activityTypeText.charAt(0).toUpperCase() + activityTypeText.slice(1)} completed successfully! Redirecting to roadmap...`);
         window.location.href = "/roadmap";
       } else {
-        alert("Failed to mark quiz as completed. Please try again.");
+        alert(`Failed to mark ${activityTypeText} as completed. Please try again.`);
       }
     } catch (error) {
-      console.error("Error completing quiz:", error);
-      alert("Error completing quiz. Please try again.");
+      console.error(`Error completing ${activityTypeText}:`, error);
+      alert(`Error completing ${activityTypeText}. Please try again.`);
     }
   };
 
@@ -59,76 +70,119 @@ function AssessmentContent() {
       case "Description":
         return (
           <div className="text-white p-4">
-            {quizName ? (
+            {(quizName || codeName) ? (
               <div className="space-y-4">
                 <div className="border-b border-white/20 pb-4">
-                  <h2 className="text-xl font-bold mb-2">Quiz Assessment</h2>
-                  <h3 className="text-lg text-blue-400">{quizName}</h3>
+                  <h2 className="text-xl font-bold mb-2">
+                    {activityType === 'exercise' ? 'Code Exercise' : 'Quiz Assessment'}
+                  </h2>
+                  <h3 className="text-lg text-blue-400">{quizName || codeName}</h3>
                   {phaseName && (
                     <p className="text-sm text-gray-400">Phase: {phaseName}</p>
                   )}
                 </div>
                 
-                <div className="space-y-3">
-                  <h4 className="font-semibold">Instructions:</h4>
-                  <ul className="list-disc list-inside space-y-2 text-gray-300">
-                    <li>Read each question carefully before answering</li>
-                    <li>You can use the Code tab to test your solutions</li>
-                    <li>Use the Study Buddy for hints if you get stuck</li>
-                    <li>Submit your answers when you&apos;re confident</li>
-                  </ul>
-                  
-                  <div className="mt-6 p-4 bg-blue-600/20 border border-blue-500/50 rounded">
-                    <h5 className="font-semibold mb-2">Sample Question:</h5>
-                    <p className="mb-4">This is a placeholder quiz question for &quot;{quizName}&quot;. In a real implementation, this would load the actual quiz questions from your database.</p>
+                {activityType === 'exercise' ? (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold">Exercise Instructions:</h4>
+                    <ul className="list-disc list-inside space-y-2 text-gray-300">
+                      <li>Complete the coding exercise in the Code tab</li>
+                      <li>Test your solution thoroughly before submitting</li>
+                      <li>Use the Study Buddy for guidance if needed</li>
+                      <li>Make sure your code meets the requirements</li>
+                    </ul>
                     
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2">
-                        <input type="radio" name="sample" className="text-blue-600" />
-                        <span>Option A</span>
-                      </label>
-                      <label className="flex items-center space-x-2">
-                        <input type="radio" name="sample" className="text-blue-600" />
-                        <span>Option B</span>
-                      </label>
-                      <label className="flex items-center space-x-2">
-                        <input type="radio" name="sample" className="text-blue-600" />
-                        <span>Option C</span>
-                      </label>
-                      <label className="flex items-center space-x-2">
-                        <input type="radio" name="sample" className="text-blue-600" />
-                        <span>Option D</span>
-                      </label>
+                    <div className="mt-6 p-4 bg-green-600/20 border border-green-500/50 rounded">
+                      <h5 className="font-semibold mb-2">Exercise: {codeName}</h5>
+                      <p className="mb-4">This is a coding exercise for &quot;{codeName}&quot;. Switch to the Code tab to start working on your solution.</p>
+                      
+                      <div className="mt-4 flex gap-3">
+                        <button 
+                          onClick={() => setActiveTab("Code")}
+                          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                        >
+                          💻 Start Coding
+                        </button>
+                        <button 
+                          onClick={completeActivity}
+                          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        >
+                          Mark as Complete
+                        </button>
+                      </div>
                     </div>
                     
-                    <div className="mt-4 flex gap-3">
-                      <button 
-                        onClick={completeQuiz}
-                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                    <div className="mt-6">
+                      <a 
+                        href="/roadmap" 
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                       >
-                        Submit Quiz & Complete
-                      </button>
-                      <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition">
-                        Skip Question
-                      </button>
+                        ← Back to Roadmap
+                      </a>
                     </div>
                   </div>
-                  
-                  <div className="mt-6">
-                    <a 
-                      href="/roadmap" 
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                    >
-                      ← Back to Roadmap
-                    </a>
+                ) : (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold">Instructions:</h4>
+                    <ul className="list-disc list-inside space-y-2 text-gray-300">
+                      <li>Read each question carefully before answering</li>
+                      <li>You can use the Code tab to test your solutions</li>
+                      <li>Use the Study Buddy for hints if you get stuck</li>
+                      <li>Submit your answers when you&apos;re confident</li>
+                    </ul>
+                    
+                    <div className="mt-6 p-4 bg-blue-600/20 border border-blue-500/50 rounded">
+                      <h5 className="font-semibold mb-2">Sample Question:</h5>
+                      <p className="mb-4">This is a placeholder quiz question for &quot;{quizName}&quot;. In a real implementation, this would load the actual quiz questions from your database.</p>
+                      
+                      <div className="space-y-2">
+                        <label className="flex items-center space-x-2">
+                          <input type="radio" name="sample" className="text-blue-600" />
+                          <span>Option A</span>
+                        </label>
+                        <label className="flex items-center space-x-2">
+                          <input type="radio" name="sample" className="text-blue-600" />
+                          <span>Option B</span>
+                        </label>
+                        <label className="flex items-center space-x-2">
+                          <input type="radio" name="sample" className="text-blue-600" />
+                          <span>Option C</span>
+                        </label>
+                        <label className="flex items-center space-x-2">
+                          <input type="radio" name="sample" className="text-blue-600" />
+                          <span>Option D</span>
+                        </label>
+                      </div>
+                      
+                      <div className="mt-4 flex gap-3">
+                        <button 
+                          onClick={completeActivity}
+                          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                        >
+                          Submit Quiz & Complete
+                        </button>
+                        <button className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition">
+                          Skip Question
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6">
+                      <a 
+                        href="/roadmap" 
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                      >
+                        ← Back to Roadmap
+                      </a>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ) : (
               <div className="space-y-4">
                 <h2 className="text-xl font-bold mb-4">Assessment Center</h2>
                 <p className="text-gray-300">
-                  Welcome to the Assessment Center! Select a quiz from your roadmap to get started.
+                  Welcome to the Assessment Center! Select a quiz or exercise from your roadmap to get started.
                 </p>
                 <div className="mt-6">
                   <a 
@@ -143,7 +197,7 @@ function AssessmentContent() {
           </div>
         );
       case "Code":
-        return <OnlineCompiler />;
+        return <OnlineCompiler exerciseName={codeName || quizName} />;
       default:
         return null;
     }
@@ -164,7 +218,8 @@ function AssessmentContent() {
       >
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-bold text-lg">
-            {quizName ? `Quiz: ${quizName}` : "Assessment Menu"}
+            {activityType === 'exercise' && codeName ? `Exercise: ${codeName}` :
+             quizName ? `Quiz: ${quizName}` : "Assessment Menu"}
           </h3>
           <button onClick={() => setMenuOpen(false)} className="text-white text-lg">
             ✕

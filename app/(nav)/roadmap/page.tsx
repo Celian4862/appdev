@@ -508,6 +508,19 @@ export default function RoadmapPage() {
                         </div>
                       )}
                       
+                      {/* Special handling for exercise activities */}
+                      {activity.type === 'exercise' && (
+                        <div className="mt-3">
+                          <a
+                            href={`/assessments?code=${encodeURIComponent(activity.name)}&id=${activity.id}&phase=${encodeURIComponent(phase.name)}&type=exercise`}
+                            className="inline-flex items-center px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            💻 Code Exercise
+                          </a>
+                        </div>
+                      )}
+                      
                       {activity.completedAt && (
                         <p className="text-xs text-green-400/80 mt-1">
                           Completed on {new Date(activity.completedAt).toLocaleDateString()}

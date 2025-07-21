@@ -207,13 +207,19 @@ export default function DashboardClient({ userName, hasRoadmap, roadmapData, pro
                   />
                 </div>
                 <p className="text-gray-300 mb-4">
-                  Test your knowledge with quizzes based on your current progress.
+                  Test your knowledge with quizzes and practice coding exercises.
                 </p>
                 <div className="space-y-3">
                   <Link href="/assessments">
                     <button className="w-full text-left p-3 bg-gray-800 hover:bg-gray-700 rounded-lg border border-gray-600 hover:border-white transition-all duration-300">
                       <span className="text-white font-medium">Take Quiz</span>
                       <span className="block text-sm text-gray-400">General knowledge test</span>
+                    </button>
+                  </Link>
+                  <Link href="/assessments?code=Practice Exercise&type=exercise">
+                    <button className="w-full text-left p-3 bg-gray-800 hover:bg-gray-700 rounded-lg border border-gray-600 hover:border-white transition-all duration-300">
+                      <span className="text-white font-medium">Code Exercise</span>
+                      <span className="block text-sm text-gray-400">Practice coding problems</span>
                     </button>
                   </Link>
                   <Link href="/assessments?quiz=current-phase">
