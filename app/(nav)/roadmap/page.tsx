@@ -468,6 +468,8 @@ export default function RoadmapPage() {
                       className={`p-4 rounded-lg transition-all cursor-pointer relative ${
                         activity.completed 
                           ? 'bg-green-600/20 border border-green-500/50' 
+                          : activity.type === 'quiz'
+                          ? 'bg-blue-600/10 border border-blue-500/30 hover:bg-blue-600/15'
                           : 'bg-white/10 hover:bg-white/15'
                       } ${updatingActivity === activity.id ? 'opacity-50' : ''}`}
                       onClick={() => activity.id && toggleActivityCompletion(activity.id, activity.completed || false)}
@@ -497,7 +499,7 @@ export default function RoadmapPage() {
                       {activity.type === 'quiz' && (
                         <div className="mt-3">
                           <a
-                            href="/assessments"
+                            href={`/assessments?quiz=${encodeURIComponent(activity.name)}&id=${activity.id}&phase=${encodeURIComponent(phase.name)}`}
                             className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition"
                             onClick={(e) => e.stopPropagation()}
                           >
