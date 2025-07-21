@@ -130,6 +130,7 @@ export async function GET() {
         estimatedDays: phase.estimatedDays,
         progress: phase.progress,
         activities: phase.activities.map(activity => ({
+          id: activity.id,
           name: activity.name,
           type: activity.type,
           estimatedHours: activity.estimatedHours,

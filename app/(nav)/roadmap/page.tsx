@@ -7,6 +7,7 @@ import ShowDetails from "./ui/client/ShowDetails";
 import { toast } from "react-hot-toast";
 
 interface Activity {
+  id?: string;
   name: string;
   description: string;
   type: "project" | "reading" | "exercise" | "quiz";
@@ -45,6 +46,59 @@ export default function RoadmapPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [hasPreferences, setHasPreferences] = useState(true);
+  const [updatingActivity, setUpdatingActivity] = useState<string | null>(null);
+
+  const updateActivityProgress = useCallback(async (activityId: string, completed: boolean) => {
+    try {
+      setUpdatingActivity(activityId);
+      
+      const response = await fetch("/api/activity-progress", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ activityId, completed }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update activity progress");
+      }
+
+      const { overallProgress, phaseProgress } = await response.json();
+      
+      // Update the roadmap state with new progress
+      setRoadmap(prevRoadmap => {
+        if (!prevRoadmap) return null;
+        
+        return {
+          ...prevRoadmap,
+          progress: overallProgress,
+          phases: prevRoadmap.phases?.map(phase => {
+            const updatedActivities = phase.activities?.map(activity => 
+              activity.id === activityId 
+                ? { ...activity, completed, completedAt: completed ? new Date().toISOString() : undefined }
+                : activity
+            );
+            
+            // Find if this phase contains the updated activity
+            const hasUpdatedActivity = phase.activities?.some(activity => activity.id === activityId);
+            
+            return hasUpdatedActivity 
+              ? { ...phase, activities: updatedActivities, progress: phaseProgress }
+              : phase;
+          }) || []
+        };
+      });
+
+      toast.success(completed ? "Activity marked as complete!" : "Activity marked as incomplete");
+      
+    } catch (error) {
+      console.error("Error updating activity:", error);
+      toast.error("Failed to update activity progress");
+    } finally {
+      setUpdatingActivity(null);
+    }
+  }, []);
 
   const generateNewRoadmap = useCallback(async () => {
     try {
@@ -392,11 +446,15 @@ export default function RoadmapPage() {
                 </h6>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {phase.activities?.map((activity, i) => (
-                    <div key={i} className={`p-4 rounded-lg transition-all ${
-                      activity.completed 
-                        ? 'bg-green-600/20 border border-green-500/50' 
-                        : 'bg-white/10 hover:bg-white/15'
-                    }`}>
+                    <div 
+                      key={i} 
+                      className={`p-4 rounded-lg transition-all cursor-pointer relative ${
+                        activity.completed 
+                          ? 'bg-green-600/20 border border-green-500/50' 
+                          : 'bg-white/10 hover:bg-white/15'
+                      } ${updatingActivity === activity.id ? 'opacity-50' : ''}`}
+                      onClick={() => activity.id && updateActivityProgress(activity.id, !activity.completed)}
+                    >
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`text-xs px-2 py-1 rounded uppercase ${
                           activity.completed 
@@ -411,6 +469,9 @@ export default function RoadmapPage() {
                         {activity.completed && (
                           <span className="text-xs text-green-400 ml-auto">✓ Completed</span>
                         )}
+                        {updatingActivity === activity.id && (
+                          <span className="text-xs text-yellow-400 ml-auto">Updating...</span>
+                        )}
                       </div>
                       <div className="font-medium text-white">{activity.name}</div>
                       <p className="text-sm text-white/80 mt-1">{activity.description}</p>
@@ -419,6 +480,17 @@ export default function RoadmapPage() {
                           Completed on {new Date(activity.completedAt).toLocaleDateString()}
                         </p>
                       )}
+                      
+                      {/* Click indicator */}
+                      <div className="absolute top-2 right-2">
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                          activity.completed 
+                            ? 'bg-green-600 border-green-500' 
+                            : 'border-white/30 hover:border-white/60'
+                        }`}>
+                          {activity.completed && <span className="text-white text-xs">✓</span>}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
