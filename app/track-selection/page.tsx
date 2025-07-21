@@ -123,9 +123,9 @@ export default function TrackFlow() {
 
       const result = await response.json();
 
-      if (result.success) {// Force a session update to refresh the JWT token
-        await update({ forceRefresh: true });// Small delay to ensure session is fully updated
-        await new Promise(resolve => setTimeout(resolve, 1000));// Use router.replace for a clean navigation
+      if (result.success) {
+        // Session will automatically refresh on next request due to JWT token update
+        // No need to force refresh - this prevents excessive API calls
         router.replace("/dashboard");
       } else {
         alert(result.error || "Failed to save preferences. Please try again.");

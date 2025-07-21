@@ -136,51 +136,67 @@ export const authOptions: NextAuthConfig = {
           }
         }
         
-        // Check onboarding status and profile data periodically (every 5 minutes) OR when manually updated
-        // This reduces database load and prevents auth failures from cold connections
+        // Check onboarding status and profile data periodically OR when manually updated
+        // More conservative in production to prevent Vercel timeouts
         if (token.id) {
           const now = Date.now();
           const lastCheck = token.lastOnboardingCheck as number || 0;
-          const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+          const isProduction = process.env.NODE_ENV === 'production';
+          const checkInterval = isProduction ? (30 * 60 * 1000) : (5 * 60 * 1000); // 30min prod, 5min dev
           
-          // Force refresh on manual update trigger or periodic check
+          // ONLY refresh database on explicit trigger or when onboarding is incomplete AND interval passed
+          // This minimizes database hits to prevent Vercel timeouts
           const shouldRefresh = trigger === 'update' || 
-                               !token.onboardingCompleted || 
-                               (now - lastCheck) > fiveMinutes;
-          
+                               (!token.onboardingCompleted && (now - lastCheck) > checkInterval);
+                               
           if (shouldRefresh) {
-            try {// Fetch both preferences and updated profile data
-              const [userPreferences, userData] = await Promise.all([
-                prisma.userPreferences.findUnique({
-                  where: { userId: token.id as string },
-                }),
-                prisma.user.findUnique({
-                  where: { id: token.id as string },
-                  select: {
-                    firstName: true,
-                    lastName: true,
-                    image: true,
-                    name: true,
-                  },
-                })
-              ]);
-              
-              const wasCompleted = token.onboardingCompleted;
-              token.onboardingCompleted = !!userPreferences;
-              token.lastOnboardingCheck = now;
-              
-              // Update profile data if available
-              if (userData) {
-                token.firstName = userData.firstName;
-                token.lastName = userData.lastName;
-                token.image = userData.image;
-                token.name = userData.name;}
-              
-              if (!wasCompleted && token.onboardingCompleted) {}
+              try {
+                // Add timeout to prevent hanging in Vercel serverless functions
+                const timeoutPromise = new Promise((_, reject) =>
+                  setTimeout(() => reject(new Error('Database query timeout')), 8000)
+                );
+                
+                // Fetch both preferences and updated profile data with timeout
+                const [userPreferences, userData] = await Promise.race([
+                  Promise.all([
+                    prisma.userPreferences.findUnique({
+                      where: { userId: token.id as string },
+                    }),
+                    prisma.user.findUnique({
+                      where: { id: token.id as string },
+                      select: {
+                        firstName: true,
+                        lastName: true,
+                        image: true,
+                        name: true,
+                      },
+                    })
+                  ]),
+                  timeoutPromise
+                ]) as [any, any];
+                
+                const wasCompleted = token.onboardingCompleted;
+                token.onboardingCompleted = !!userPreferences;
+                token.lastOnboardingCheck = now;
+                
+                // Update profile data if available
+                if (userData) {
+                  token.firstName = userData.firstName;
+                  token.lastName = userData.lastName;
+                  token.image = userData.image;
+                  token.name = userData.name;
+                }
+                
+                if (!wasCompleted && token.onboardingCompleted) {
+                  // User just completed onboarding - could trigger refresh if needed
+                }
             } catch (error) {
-              if (process.env.NODE_ENV === "development") { console.error("❌ Error checking user preferences and profile data in JWT:", error); }
-              // Don't break the session, keep existing value and delay next check
-              token.lastOnboardingCheck = now;
+              if (process.env.NODE_ENV === "development") { 
+                console.error("❌ Error checking user preferences and profile data in JWT:", error); 
+              }
+              // Don't break the session, keep existing values and extend delay
+              // This prevents auth failures from cascading in production
+              token.lastOnboardingCheck = Date.now() + (10 * 60 * 1000); // Delay 10 minutes
               // If this is a fresh token without onboarding status, assume not completed
               if (token.onboardingCompleted === undefined) {
                 token.onboardingCompleted = false;
@@ -206,7 +222,9 @@ export const authOptions: NextAuthConfig = {
           session.user.lastName = token.lastName as string | undefined;
           session.user.image = token.image as string | undefined;
           session.user.email = token.email ?? session.user.email;
-        }return session;
+        }
+        
+        return session;
       } catch (error) {
         if (process.env.NODE_ENV === "development") { console.error("Error in session callback:", error); }
         // Return session as-is to prevent breaking
